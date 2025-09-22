@@ -1,0 +1,196 @@
+
+La Policía Nacional de Colombia: Un Análisis Multidimensional de su Evolución y Desafíos
+
+
+Resumen Ejecutivo
+
+El presente informe ofrece un análisis exhaustivo de la Policía Nacional de Colombia (PNC) a través de sus dimensiones histórica, institucional, jurídica, social y política. La institución se presenta como un cuerpo armado permanente cuya identidad ha estado marcada por una profunda y recurrente dicotomía: su definición constitucional de "naturaleza civil" frente a una doctrina y subordinación al Ministerio de Defensa que históricamente ha sido de carácter militar. Esta tensión, exacerbada por su rol protagónico en el prolongado conflicto armado interno, es la raíz de los desafíos actuales.
+Los hallazgos clave de este reporte demuestran que, aunque la PNC se fundó con una vocación civil en 1891 1, las presiones de la inestabilidad política y el conflicto la llevaron a una militarización gradual, consolidada a partir de 1950.1 La Constitución de 1991 intentó revertir esta tendencia al conferirle una naturaleza civil 3, pero su mando operativo y su doctrina no cambiaron fundamentalmente, creando una ambigüedad que la Jurisdicción Especial para la Paz (JEP) ha reconocido al dictaminar la "incorporación de facto" de algunas unidades policiales a las Fuerzas Armadas en el contexto del conflicto.4
+Desde una perspectiva social, la institución enfrenta una severa crisis de legitimidad, reflejada en bajos niveles de confianza ciudadana.5 Esta desconfianza se deriva de problemas estructurales como el abuso de poder, la corrupción y la percepción de impunidad en casos de violaciones de derechos humanos.5 A nivel político, el debate sobre la reforma policial se ha visto limitado por la falta de voluntad para abordar el dilema del mando civil.7 Las iniciativas de cambio, como la transformación del ESMAD en la UNDMO, han sido calificadas por la sociedad civil como superficiales y sin una participación real.7 La PNC, al ser simultáneamente un actor del conflicto y una de sus principales víctimas, enfrenta el reto de una transformación profunda que alinee su práctica con su mandato constitucional, un paso indispensable para la consolidación de la paz y el fortalecimiento de la democracia en Colombia.
+
+1. Introducción
+
+La Policía Nacional de Colombia (PNC) constituye uno de los pilares del Estado, con una misión constitucional primordial centrada en el mantenimiento de la convivencia y el orden público.2 Sin embargo, su trayectoria histórica y su rol en un país que ha vivido décadas de conflicto armado le han conferido una identidad institucional compleja y, en ocasiones, contradictoria. Su mandato de asegurar la paz ciudadana convive con la necesidad de combatir fenómenos criminales de alta complejidad, un rol que la ha expuesto a críticas y que ha puesto en evidencia tensiones estructurales.
+El presente informe aborda de manera integral las múltiples dimensiones que definen a la PNC. Se analizará su evolución histórica, trazando el camino desde su fundación civil hasta su actual dicotomía. Se desglosará su estructura institucional y despliegue operativo, examinando cómo su arquitectura interna moldea su relación con la ciudadanía. Posteriormente, se explorará su marco jurídico y las relaciones de subordinación que la vinculan con el poder público, tanto a nivel nacional como local. El análisis social se centrará en la percepción ciudadana, la crisis de confianza y los desafíos en materia de derechos humanos. Finalmente, se examinará la dimensión política, evaluando los debates y propuestas de reforma que buscan una transformación de la institución en el escenario de posacuerdo. La investigación se basa en una revisión sistemática de documentos institucionales, legislación, informes académicos y de derechos humanos, con el objetivo de ofrecer una comprensión holística y matizada de la realidad policial en Colombia.
+
+2. Dimensión Histórica: De la Fundación Civil a la Dicotomía Militar-Civil
+
+La historia de la Policía Nacional de Colombia es una narrativa de adaptación y transformación, marcada por un ciclo recurrente de militarización y esfuerzos de civilización.
+
+2.1. Orígenes y Fundación (1891-1904): La Huella Francesa y la Esencia Civil
+
+La institución fue formalmente establecida mediante el Decreto 1000 del 5 de noviembre de 1891, bajo el gobierno del presidente Carlos Holguín.2 Este acto, que se considera la fecha de nacimiento de la PNC, fue el resultado de la contratación de un asesor francés, el comisario Juan María Marcelino Gilibert, con el propósito de organizar y capacitar un cuerpo de policía con un enfoque civil y centralizado.1 El objetivo era reemplazar los diversos cuerpos de policía departamentales y municipales que existían en ese momento, unificando la función de policía bajo una dirección nacional.2
+Los primeros años de la institución se caracterizaron por un enfoque en la provisión de servicios públicos y el mantenimiento del orden en las ciudades.9 Una de sus primeras especialidades fue la sección de Bomberos, creada en 1919 9, aunque sus funciones de prevención de incendios ya habían sido asignadas por Gilibert en 1891.9 En 1893, la joven institución enfrentó lo que se denominó su "cruel bautismo de sangre" durante disturbios en la capital, un evento que requirió la colaboración del Ejército y que demostró la confrontación temprana de la policía con la violencia social.9 La visión de Gilibert se extendió al campo con la creación de la "Policía Rural" en 1898 y al sistema judicial con la "Policía de Ferrocarriles" y los "Servicios de Policía para las oficinas del Poder Judicial" en 1902.9
+
+2.2. La Militarización del Siglo XX (1904-1991): Hacia una Doctrina de Seguridad Nacional
+
+El primer hito de militarización se produjo en 1904, cuando el gobierno del General Rafael Reyes adscribió la Policía Nacional al Ministerio de Guerra.2 Este acto, junto con la creación de la Gendarmería Nacional en 1906, mostró un espíritu absorbente y militarizante que desdibujó la esencia civil de la institución.2 Aunque la Gendarmería tuvo una vida efímera, la tendencia se consolidó a lo largo del siglo XX, especialmente durante el conflicto civil conocido como La Violencia.
+El momento más crítico de la historia de la PNC ocurrió el 9 de abril de 1948, un evento conocido como "la hecatombe", que llevó a la disolución del Cuerpo de Policía y su Escuela de Cadetes, la Escuela General Santander.1 Esta disolución es un claro ejemplo de cómo la inestabilidad política impactó directamente la estructura policial. La refundación de la institución en 1950, bajo un enfoque y mando militar, fue la respuesta del Estado a la crisis.1 A partir de entonces, se consolidó una doctrina de seguridad nacional que priorizaba la contrainsurgencia y el combate, un enfoque más propio de las Fuerzas Militares. La creación de la Escuela Gonzalo Jiménez de Quesada en 1950 para formar mandos medios y la ampliación de la profesionalización en 1995 con el Nivel Ejecutivo y especialidades como la Policía Judicial y Rural 1 son indicadores de esta consolidación.
+
+2.3. El Reordenamiento Constitucional y la Actualidad (Desde 1991): La Tensión de la "Naturaleza Civil"
+
+La Constitución Política de Colombia de 1991 intentó formalmente revertir la tendencia militarizante al definir explícitamente a la PNC en su Artículo 218 como un "cuerpo armado permanente de naturaleza civil".1 Este es un punto de quiebre legal, que buscaba que la institución se enfocara en la convivencia ciudadana. No obstante, esta definición constitucional coexistió con su subordinación al Ministerio de Defensa.1
+La contradicción entre la definición jurídica y la realidad operativa se hizo evidente durante el conflicto armado. Si bien la policía era formalmente civil, en la práctica, unidades como el Grupo Gaula de la Policía Nacional participaron activamente en operaciones de contrainsurgencia.4 Esta ambigüedad fue resuelta, en parte, por la JEP. La sentencia del 18 de junio de 2020 de la Sección de Apelación del Tribunal para la Paz dictaminó que, si bien la PNC es civil
+de jure, unidades específicas podían ser consideradas incorporadas de facto a las Fuerzas Armadas si cumplían una "función continua de combate".4 Este fallo es trascendental, ya que reconoció que la distinción legal se desdibujó en la práctica y que el estatus de un policía en el conflicto se determina por su función real y no por su clasificación institucional.
+Es crucial entender que la PNC ha sido simultáneamente un actor y una víctima del conflicto.12 Los datos del Registro Único de Víctimas (RUV) muestran que más de 84,000 de sus miembros han sido reconocidos como víctimas, principalmente por desplazamiento forzado, lo que subraya el alto costo humano de su participación en la guerra.12
+
+Tabla 1: Cronología de Hitos Clave en la Historia de la Policía Nacional de Colombia
+Fecha
+5 de noviembre de 1891
+1904
+9 de abril de 1948
+1950
+1991
+2020
+Fuentes: 1
+
+
+3. Estructura Institucional y Despliegue Operativo
+
+La estructura de la PNC es un reflejo de su compleja naturaleza, combinando una jerarquía militar con un despliegue operativo civil-territorial.
+
+3.1. Organigrama y Cadena de Mando
+
+La línea de mando superior de la PNC está encabezada por el Presidente de la República, quien ostenta la autoridad de Comandante Supremo de las Fuerzas Armadas.13 Le sigue el Ministro de Defensa Nacional, a quien la institución está subordinada para efectos de dirección y mando.1 La dirección institucional recae en el Director General de la Policía Nacional, quien es de libre nombramiento y remoción por parte del Presidente.13
+La estructura interna de la institución está organizada en varias jefaturas y direcciones especializadas, según lo dispuesto en el Decreto 113 de 2022.17 A continuación, se detalla la organización de la Dirección General:
+
+Tabla 2: Estructura Orgánica de la Policía Nacional de Colombia (Basada en el Decreto 113 de 2022)
+Dirección General
+Subdirección General
+Jefatura Nacional de Desarrollo Humano
+Jefatura Nacional de Servicio de Policía
+Jefatura Nacional de Administración de Recursos
+Inspección General
+Comisionado de Derechos Humanos
+Oficinas Asesoras
+Fuentes: 17
+
+La jerarquía policial se basa en un sistema de grados que clasifica a su personal en tres categorías: oficiales, suboficiales y el nivel ejecutivo.
+
+Tabla 3: Jerarquía y Grados en la Policía Nacional de Colombia
+Categoría
+Oficiales Superiores
+Oficiales Comandantes
+Oficiales Inferiores
+Nivel Ejecutivo
+Tropa
+Fuentes: 19
+
+
+3.2. Despliegue Territorial y Especialización Operativa
+
+El despliegue de la PNC abarca todo el territorio nacional, organizándose en ocho regiones de policía, múltiples departamentos y metropolitanas.21 Aunque el mando institucional es centralizado a nivel nacional, la autoridad operativa está descentralizada a nivel regional, metropolitano y municipal.1 No obstante, los comandantes regionales y metropolitanos permanecen subordinados a las directivas nacionales.1
+La proliferación de direcciones especializadas como la Dirección de Investigación Criminal e INTERPOL (DIJIN), la Dirección de Inteligencia Policial (DIPOL) y la Dirección Antinarcóticos (DIRAN) 17 ha sido una respuesta a la complejidad del crimen organizado. Sin embargo, esta especialización ha tenido un efecto secundario. A medida que la institución ha priorizado las operaciones de alto impacto contra el crimen organizado, los recursos y el enfoque se han alejado del servicio de vigilancia y proximidad con la comunidad. Los análisis indican que la especialización en ciertos delitos hace que el accionar de estas unidades sea "distante" de la relación cotidiana con el ciudadano.22 Esta distancia debilita el vínculo de confianza, priorizando un enfoque de reacción y combate sobre uno de prevención y convivencia.
+
+4. Marco Jurídico y Relaciones con el Poder Público
+
+La relación de la Policía Nacional con el Estado y la sociedad se define por un marco jurídico que, si bien establece sus principios, también presenta contradicciones que generan ambigüedad en su rol.
+
+4.1. Fundamento Constitucional y Legal
+
+El marco jurídico de la PNC se asienta en la Constitución de 1991, la cual en su Artículo 218 establece que es un "cuerpo armado permanente de naturaleza civil, a cargo de la Nación, cuyo fin primordial es el mantenimiento de las condiciones necesarias para el ejercicio de los derechos y libertades públicas".3 La Ley 62 de 1993, que organiza la institución, refuerza este carácter, definiendo la actividad policial como una profesión que debe tener un "acento en los derechos humanos, la instrucción ética, ecológica, de liderazgo y de servicio comunitario".11 Dicha ley también recalca que la actividad policial no puede ir en contra de quien ejerce su derecho, sino de quien abusa de él, y que todo el personal uniformado tiene la obligación de intervenir frente a cualquier caso de policía.11
+
+4.2. Relación con el Poder Ejecutivo
+
+A pesar de su naturaleza civil, la PNC está bajo el mando del Ministro de Defensa Nacional.1 La cadena de mando jerárquica establece que el Presidente de la República es el "Jefe Superior" de la policía.14 Sin embargo, la ley otorga una autoridad importante a las autoridades civiles locales: los gobernadores y alcaldes son las "primeras autoridades de Policía" en sus respectivas jurisdicciones y tienen la potestad de impartir órdenes, diseñar planes de seguridad y solicitar informes a los comandantes de policía.11 Esta división de mando crea una ambigüedad. Mientras el control político formal radica en las autoridades civiles, el mando operativo y la subordinación jerárquica final dependen del Ministerio de Defensa, un ente militar. Esta dislocación se ha traducido en conflictos de autoridad y una falta de coherencia en la política de seguridad a nivel local.
+
+4.3. Implicaciones del Estatus Jurídico en el Conflicto
+
+La ambigüedad jurídica entre el carácter civil y la subordinación militar ha tenido profundas implicaciones en el contexto del conflicto armado. La sentencia de la JEP del 2020 abordó esta contradicción, diferenciando la participación directa e individual de un policía en las hostilidades, de la "incorporación de facto" de unidades policiales enteras.4 Este fallo argumenta que las unidades que cumplían funciones de combate de manera continua, como el Grupo Gaula de la Policía, actuaron materialmente como combatientes, perdiendo la protección del derecho internacional humanitario.4 Este análisis judicial demuestra que, más allá de la definición legal de la PNC, su función en la práctica es lo que determina su estatus. La sentencia es un hito porque valida que la doctrina y el mando militar que permean la institución la han convertido, en la práctica, en un actor más del conflicto, lo que plantea un desafío fundamental para su rol en un escenario de paz.
+
+5. Dimensión Social: La Crisis de Confianza y la Relación con la Ciudadanía
+
+La relación entre la Policía Nacional y la sociedad colombiana es compleja, marcada por una profunda crisis de confianza que limita la cooperación ciudadana y la legitimidad de la institución.
+
+5.1. Percepción Ciudadana y Cifras de Confianza
+
+Los estudios demuestran que la confianza en la PNC es significativamente baja en varias regiones del país. En Bogotá, por ejemplo, la confianza apenas alcanza el 23.5%, una cifra notablemente inferior a la de otras regiones.5 Esta desconfianza se vincula directamente con la percepción de corrupción y la falta de respeto a los derechos humanos. Un 54% de los colombianos cree que la policía no respeta los derechos fundamentales 5, y un 12.9% de los encuestados reporta haber sido víctima de una solicitud de soborno por parte de un miembro de la institución.5 Estos datos demuestran una brecha profunda entre los valores de la institución, que promueven la justicia, el respeto y la dignidad 2, y la percepción de la ciudadanía.
+
+5.2. Críticas por Abuso Policial y Violaciones de Derechos Humanos
+
+La crisis de confianza se agudiza con los recurrentes informes de uso excesivo de la fuerza. Human Rights Watch ha documentado graves abusos, incluyendo el uso indiscriminado de armas menos letales, golpizas y violencia de género durante las protestas de 2021.6 La organización ha recibido denuncias creíbles de muertes, muchas de las cuales parecen haber sido causadas por municiones letales disparadas por la policía.6 A pesar de la gravedad de estos casos, la rendición de cuentas ha sido limitada, con pocas imputaciones formales y suspensiones.6 Esta impunidad percibida erosiona aún más la legitimidad institucional y refuerza el ciclo de desconfianza.
+
+Tabla 4: Percepción de Confianza en la Policía a Nivel Regional
+Región
+Bogotá
+Caribe, Oriental y Central
+Fuente: 5
+
+
+5.3. Relación Comunidad-Policía y Modelos de Interacción
+
+La PNC ha intentado mejorar su relación con la ciudadanía a través de programas de proximidad como "Jóvenes ¡A lo Bien!" y "Cívica Infantil y Juvenil".23 Sin embargo, la efectividad de estos modelos ha sido cuestionada. Un análisis indica que los programas de policía comunitaria a menudo "instrumentalizan" a la ciudadanía, en lugar de fomentar su participación activa.22 Esta contradicción entre una policía que se presenta como cercana y social, pero que en momentos de crisis recurre a una doctrina de confrontación, es un reflejo de su dualidad institucional. La falta de una relación positiva con la ciudadanía no es solo un problema de imagen, ya que la baja credibilidad puede llevar a las personas a recurrir a la "justicia por mano propia" 24, lo que amenaza la convivencia social.
+Para ofrecer una perspectiva más equilibrada sobre la dimensión social, es importante reconocer que la policía también ha sido una de las principales víctimas del conflicto armado.
+
+Tabla 5: Víctimas de la Policía Nacional en el Conflicto Armado (RUV)
+Total de personas de la PNC incluidas en el RUV
+Principal hecho victimizante
+Momento del hecho victimizante
+Fuente: 12
+
+Estos datos son fundamentales para comprender el papel de la policía como actor y víctima simultánea en el conflicto, lo que añade una capa de complejidad al debate sobre su función en la sociedad.
+
+6. Dimensión Política y el Debate sobre la Reforma Policial
+
+El debate sobre la reforma policial es un tema central de la agenda política, especialmente en el contexto del posacuerdo, donde la institución debe enfrentar nuevos retos de convivencia pacífica.25
+
+6.1. Retos de la Policía en el Posacuerdo
+
+Los nuevos desafíos para la PNC en un escenario de paz incluyen el fortalecimiento de la "convivencia en entornos rurales", la gestión de "la reintegración y reincidencia delictiva" y la lucha contra los "fenómenos criminales" que amenazan la seguridad ciudadana.25 Estos retos requieren una reorientación de la doctrina policial y un enfoque más proactivo y preventivo.26
+
+6.2. La Agenda de Reforma y sus Limitaciones
+
+A pesar de las crecientes demandas de reforma por parte de la sociedad civil y las organizaciones de derechos humanos 27, las iniciativas recientes han sido calificadas como insuficientes. La transformación del Escuadrón Móvil Antidisturbios (ESMAD) en la Unidad de Diálogo y Mantenimiento del Orden (UNDMO) es un ejemplo de esto.7 La Mesa por la Reforma Policial ha criticado este cambio como "cosmético" y "no estructural," argumentando que no se llevó a cabo con una participación real de la sociedad civil.7 Se señala que la nueva unidad no desmantela la antigua estructura, mantiene una desproporción entre los equipos de diálogo y los de intervención, y legitima prácticas de inteligencia contra manifestantes.7
+Un punto crítico del debate político es el abandono de la propuesta de trasladar la PNC a un ministerio de carácter civil, una promesa de campaña que no se ha materializado.7 Esta decisión es un claro indicio de la falta de voluntad política para abordar la raíz del problema institucional: la dicotomía entre su naturaleza civil y su mando militar.7 El hecho de que la reforma se haya reducido a discusiones internas de la policía, sin una participación amplia de la ciudadanía, demuestra que el Estado no ha logrado enfrentar el dilema de la naturaleza de su fuerza pública. Mientras la doctrina de la institución continúe orientada por la noción de "enemigo interno", será difícil lograr una transformación que garantice los derechos humanos y la legitimidad en el servicio.
+
+7. Desafíos y Recomendaciones para una Transformación Integral
+
+La PNC se encuentra en una coyuntura crítica. Para lograr una transformación integral, se deben abordar los siguientes desafíos estructurales y operacionales:
+
+7.1. Síntesis de los Desafíos Clave
+
+Dilema Institucional: Persiste la tensión entre su definición constitucional como un cuerpo de naturaleza civil y su subordinación a un ente militar, el Ministerio de Defensa.
+Brecha Social: Existe una profunda crisis de confianza y legitimidad, causada por la percepción de impunidad, la corrupción y el uso excesivo de la fuerza.
+Crisis de Rendición de Cuentas: Los mecanismos de control interno no han demostrado ser efectivos e imparciales para investigar y sancionar las violaciones de derechos humanos.
+Desafíos Operativos: La doctrina policial no se ha adaptado por completo a los retos de la convivencia en un escenario de posacuerdo, manteniendo un enfoque de confrontación en lugar de uno de proximidad y resolución de conflictos.
+
+7.2. Recomendaciones Estratégicas
+
+Para superar estos desafíos, se sugieren las siguientes acciones estratégicas:
+Reforma del Mando y Control: Es imperativo trasladar el mando de la PNC a un ministerio de naturaleza civil, lo que ayudaría a armonizar su estructura con su mandato constitucional.7 Se debe complementar esta medida con la creación de mecanismos de control externos, independientes e imparciales, para investigar y sancionar los abusos policiales.7
+Cambio Doctrinal y Educativo: La doctrina de la fuerza pública debe ser replanteada para dejar de lado la noción de "enemigo interno" y centrarse en la protección de los derechos humanos y un enfoque diferencial.7 La formación policial debe fortalecer el componente ético, social y de servicio comunitario, y la capacitación en habilidades blandas, liderazgo y resolución pacífica de conflictos.11
+Fortalecimiento de la Relación con la Ciudadanía: Se deben implementar medidas de transparencia como el uso obligatorio de cámaras corporales, que actúan como un elemento disuasorio contra el abuso y mejoran la rendición de cuentas.24 Asimismo, se deben establecer comisiones civiles de monitoreo que permitan la participación de la comunidad en la evaluación de la actuación policial.24 Estas iniciativas, en conjunto con un diálogo genuino, son clave para reconstruir la confianza.
+
+8. Conclusiones
+
+La Policía Nacional de Colombia es una institución en constante evolución, cuya identidad ha sido moldeada por la interacción de fuerzas históricas, políticas y sociales. La dicotomía entre su naturaleza civil y su mando militar ha generado una ambigüedad institucional que se ha manifestado en una profunda crisis de confianza con la ciudadanía. Esta falta de legitimidad, alimentada por la percepción de impunidad en casos de abuso y corrupción, representa una amenaza al Estado de derecho y a la convivencia social.
+El análisis de este reporte concluye que la resolución de la crisis policial no es un asunto puramente institucional, sino un desafío político fundamental que requiere voluntad para abordar cambios estructurales. La JEP ha validado que la función real, y no solo la clasificación legal, es lo que define el estatus de la policía en el contexto del conflicto, lo que obliga a una reevaluación de su doctrina. Una reforma integral y participativa que alinee la estructura de mando con la definición constitucional de naturaleza civil, que fomente una nueva doctrina basada en los derechos humanos y que fortalezca los mecanismos de control externo es indispensable. Solo así la PNC podrá consolidarse como una fuerza verdaderamente democrática, profesional y, lo más importante, digna de la confianza de los colombianos.
+Obras citadas
+Policía Nacional de Colombia - Wikipedia, la enciclopedia libre, fecha de acceso: septiembre 8, 2025, https://es.wikipedia.org/wiki/Polic%C3%ADa_Nacional_de_Colombia
+Quiénes somos - Policía Nacional de Colombia, fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/quienes-somos
+Constitución Política De Colombia > TÍTULO VII > CAPÍTULO 7, fecha de acceso: septiembre 8, 2025, https://colombia.justia.com/nacionales/constitucion-politica-de-colombia/titulo-vii/capitulo-7/
+La incorporación de facto de la policía a las Fuerzas Armadas ..., fecha de acceso: septiembre 8, 2025, https://www.unisabana.edu.co/programas/unidades-academicas/facultad-de-estudios-juridicos-politicos-e-internacionales/anuario-dih/articulos-volumen-2/la-incorporacion-de-facto-de-la-policia-a-las-fuerzas-armadas
+Un escenario crítico para la implementación del nuevo Código de Policía, fecha de acceso: septiembre 8, 2025, https://www.vanderbilt.edu/lapop/news/032417.Colombia-Observatoriodelademocracia.pdf
+Colombia: Brutalidad policial contra manifestantes | Human Rights ..., fecha de acceso: septiembre 8, 2025, https://www.hrw.org/es/news/2021/06/09/colombia-brutalidad-policial-contra-manifestantes
+Transformación del ESMAD en UNDMO no fue estructural ni contó ..., fecha de acceso: septiembre 8, 2025, https://coeuropa.org.co/transformacion-esmad-no-fue-estructural/
+Organismos estatales de justicia y policía en la ciudad de Bucaramanga, 1900 - 1950, fecha de acceso: septiembre 8, 2025, http://www.scielo.org.co/scielo.php?script=sci_arttext&pid=S0122-20662012000200010
+Academia de Historia de la Policía Nacional “Cuaderno Histórico ..., fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/sites/default/files/publicaciones-institucionales/cuaderno-historico-edicion-6.pdf
+Untitled - Ministerio de Justicia y del Derecho, fecha de acceso: septiembre 8, 2025, https://www.minjusticia.gov.co/normatividad-co/IntervencionesCorteConstitucional/MJD-DEF19-0000080%20Corte.pdf
+Ley 62 de 1993 - Gestor Normativo - Función Pública, fecha de acceso: septiembre 8, 2025, https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=6943
+Integrantes de la fuerza pública - Unidad para las Víctimas, fecha de acceso: septiembre 8, 2025, https://www.unidadvictimas.gov.co/sites/default/files/documentosbiblioteca/infografia-fuerzapublicacomovictimadelconflictoarmado.pdf
+PoLicia nacionaL de coLombia dirección general tomo 1, fecha de acceso: septiembre 8, 2025, https://pdba.georgetown.edu/Security/citizensecurity/Colombia/politicas/lineamientospolicia.pdf
+Concepto Sala de Consulta C.E. 892 de 1996 Consejo de Estado - Sala de Consulta y Servicio Civil - Gestor Normativo - Función Pública, fecha de acceso: septiembre 8, 2025, https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=3829
+Línea de mando | Policía Nacional de Colombia, fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/linea-de-mando
+Directorio de entidades del sector defensa - Policía Nacional de Colombia, fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/contenido/directorio-entidades-del-sector-defensa
+Decreto 113 de 2022 - Gestor Normativo - Función Pública, fecha de acceso: septiembre 8, 2025, https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=176328
+Policía Nacional de Colombia, fecha de acceso: septiembre 8, 2025, https://wikicolombia.unocha.org/index.php?title=Polic%C3%ADa_Nacional_de_Colombia
+DECRETO 1360 DE 1942 - SUIN-Juriscol, fecha de acceso: septiembre 8, 2025, https://www.suin-juriscol.gov.co/viewDocument.asp?id=1273293
+Fidelización policial: potenciadores de permanencia del personal, con enfoque diferencial, fecha de acceso: septiembre 8, 2025, https://revistalogos.policia.edu.co:8443/index.php/rlct/article/download/1723/2046?inline=1
+Regiones, Departamentos y Metropolitanas | Policía Nacional de ..., fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/regiones-departamentos-metropolitanas
+LA RELACIÓN - Fundación Ideas para la Paz, fecha de acceso: septiembre 8, 2025, https://storage.ideaspaz.org/documents/FIP_Fescol_RelacionPoliciaCiudadanos.pdf
+Programas Sociales - Policía Nacional de Colombia, fecha de acceso: septiembre 8, 2025, https://www.policia.gov.co/programas-sociales
+Estrategias para mejorar la relación entre la policía y los ..., fecha de acceso: septiembre 8, 2025, https://www.uniandes.edu.co/es/noticias/gobierno-y-politica/estrategias-para-mejorar-la-relacion-entre-la-policia-y-los-ciudadanos
+Retos y desafíos de la policía en contextos de transición hacia la paz, fecha de acceso: septiembre 8, 2025, https://library.fes.de/pdf-files/bueros/kolumbien/12482.pdf
+ESTRATEGIA DE MEJORAMIENTO DE LA PERCEPCIÓN DE SEGURIDAD Y ACERCAMIENTO DE LA POLICÍA A LA COMUNIDAD EN LA ESTACIÓN SEXTA DE - Dialnet, fecha de acceso: septiembre 8, 2025, https://dialnet.unirioja.es/descarga/articulo/9742405.pdf
+Colombia: La Policía Nacional debe ser reformada integralmente - Amnistía Internacional, fecha de acceso: septiembre 8, 2025, https://www.amnesty.org/es/latest/news/2023/03/colombia-national-police-must-be-comprehensively-reformed/
+Pronunciamiento de la Coalición de la Mesa por la Reforma Policial, fecha de acceso: septiembre 8, 2025, https://coeuropa.org.co/pronunciamiento-de-la-coalicion-de-la-mesa-por-la-reforma-policial/

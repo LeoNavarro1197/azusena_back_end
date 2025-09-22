@@ -1,0 +1,234 @@
+¿Cuál es el procedimiento para anular una factura en salud?
+
+¿Qué documentos son necesarios para afiliar a un usuario al SGSSS?
+
+¿Cuál es el rol del SISBEN en la afiliación al sistema de salud?
+
+¿Qué es la movilidad entre regímenes en el SGSSS?
+
+¿Cómo se hace el traslado de EPS en Colombia?
+
+¿Qué derechos y deberes tienen los usuarios del sistema de salud?
+
+¿Qué pasos se deben seguir para resolver una queja de un usuario?
+
+¿Qué información debe contener una PQRS?
+
+¿Qué es la referencia y contrarreferencia en salud?
+
+¿Qué requisitos se deben cumplir para el acceso a servicios no POS?
+
+📚 Gestión Documental en Salud
+¿Qué es la gestión documental en una entidad de salud?
+
+¿Cómo se clasifica la documentación clínica y administrativa?
+
+¿Qué es un archivo central y cómo se organiza?
+
+¿Qué documentos se deben conservar de manera permanente en una IPS?
+
+¿Qué es una tabla de retención documental?
+
+¿Qué importancia tiene el archivo clínico en la auditoría?
+
+¿Qué medidas de seguridad deben aplicarse a la documentación en salud?
+
+¿Cuál es el tiempo mínimo de conservación de una historia clínica?
+
+¿Qué es el comité de historias clínicas y cuál es su función?
+
+¿Cómo afecta la Ley 1581 de 2012 a los procesos documentales en salud?
+
+✅ Calidad y Auditoría en Salud
+¿Qué es la autoevaluación del Sistema de Garantía de Calidad?
+
+¿Cuáles son los componentes del Sistema Obligatorio de Garantía de Calidad?
+
+¿Qué es el Programa de Auditoría para el Mejoramiento de la Calidad (PAMEC)?
+
+¿Qué indicadores se utilizan para evaluar la calidad en salud?
+
+¿Qué papel cumplen las encuestas de satisfacción en la mejora continua?
+
+¿Cómo se diseña un plan de mejora para una IPS?
+
+¿Qué diferencia hay entre auditoría médica y auditoría administrativa?
+
+¿Qué competencias debe tener un auditor en salud?
+
+¿Qué es una no conformidad y cómo se gestiona?
+
+¿Qué es el enfoque de gestión por procesos en salud?
+
+💻 Sistemas de Información en Salud
+¿Qué es el aplicativo MIPRES y cuál es su finalidad?
+
+¿Qué herramientas digitales se usan para gestionar la historia clínica electrónica?
+
+¿Qué es el Sistema Integrado de Información de la Protección Social (SISPRO)?
+
+¿Qué funciones tiene el aplicativo BDUA?
+
+¿Cómo protege la ley colombiana la información digital del paciente?
+
+¿Qué es un sistema de información hospitalario?
+
+¿Cuál es la utilidad de la interoperabilidad en los sistemas de salud?
+
+¿Qué ventajas ofrece el uso de inteligencia artificial en procesos administrativos?
+
+¿Cómo implementar un sistema de gestión documental digital en salud?
+
+¿Qué requisitos debe cumplir un software de historia clínica electrónica?
+
+👩‍⚕️ Recursos Humanos y Ética Administrativa
+¿Qué competencias administrativas debe tener un auxiliar en salud?
+
+¿Qué es el perfil de cargo y cómo se construye?
+
+¿Qué principios éticos deben regir el trabajo en procesos administrativos en salud?
+
+¿Cuál es el papel del comité de ética hospitalaria?
+
+¿Cómo se gestiona el clima organizacional en una IPS?
+
+¿Qué mecanismos existen para prevenir el acoso laboral en el sector salud?
+
+¿Qué rol cumplen las capacitaciones en la mejora de los procesos administrativos?
+
+¿Cómo se elabora un manual de funciones?
+
+¿Qué es el sistema de evaluación del desempeño en una IPS?
+
+¿Qué leyes regulan los contratos laborales en el sector salud?
+
+🧠 Educación, Formación y Normativa
+¿Cuáles son las competencias del Tecnólogo en Gestión Administrativa en Salud?
+
+¿Qué normativa regula los procesos administrativos en salud en Colombia?
+
+¿Qué es la Resolución 1995 de 1999 y cuál es su importancia?
+
+¿Qué temas debe abordar una inducción institucional en una IPS?
+
+¿Qué es la Ley 100 de 1993 y cómo afecta a los procesos administrativos?
+
+¿Qué impacto tiene la normatividad en la atención centrada en el usuario?
+
+¿Cuál es el objetivo del Decreto 780 de 2016?
+
+¿Cómo se relaciona el Plan Nacional de Salud Pública con la gestión administrativa?
+
+¿Qué funciones tiene la Superintendencia Nacional de Salud?
+
+¿Qué es el control interno y cómo se aplica en una entidad de salud?
+
+📌 Casos Prácticos y Resolución de Problemas
+¿Cómo actuar frente a una glosa injustificada por parte de una EPS?
+
+¿Qué hacer si un usuario reporta inconformidad con una factura?
+
+¿Cómo responder a una auditoría externa en salud?
+
+¿Qué hacer si un documento clínico se extravía?
+
+¿Qué acciones correctivas se deben tomar ante hallazgos de auditoría?
+
+¿Cómo se resuelve una inconsistencia en los RIPS?
+
+¿Qué hacer si se detecta una omisión en una historia clínica?
+
+¿Qué estrategia usar para mejorar el tiempo de respuesta en PQRS?
+
+¿Cómo gestionar la sobrecarga documental en una IPS?
+
+¿Qué proceso seguir para realizar una conciliación de cartera con una EPS?
+
+🧩 Complementarias
+¿Qué indicadores se usan para evaluar la gestión administrativa?
+
+¿Qué es una visita de habilitación y cómo se prepara?
+
+¿Qué importancia tiene la cultura organizacional en las IPS?
+
+¿Qué estrategias se pueden aplicar para mejorar la oportunidad en la atención?
+
+¿Qué tipos de contratos existen entre EPS e IPS?
+
+¿Qué es una auditoría concurrente en salud?
+
+¿Cómo gestionar eficientemente las agendas médicas en una IPS?
+
+¿Qué rol tiene el área administrativa en la promoción y prevención?
+
+¿Qué relación hay entre la atención integral y la gestión administrativa?
+
+¿Qué retos enfrenta la administración en salud frente a la transformación digital?
+
+==============================================================
+
+Si tu objetivo es usar estos CSV de artículos legales como base de conocimiento para un sistema de RAG (Retrieval-Augmented Generation) con Mistral 7B, lo más importante es diseñar prompts de prueba que simulen consultas reales, variadas y un poco retadoras, para medir:
+
+Recuperación → ¿trae el artículo correcto del CSV?
+
+Comprensión → ¿entiende el subtema, categorías y resumen?
+
+Razonamiento → ¿puede responder combinando artículos o comparando normas?
+
+Robustez → ¿responde bien aunque la pregunta esté formulada de forma ambigua o coloquial?
+
+Aquí te dejo un set de prompts de prueba, organizados por nivel de dificultad:
+
+🟢 Nivel 1 – Búsqueda directa (simples)
+
+¿Qué establece el Artículo 229 sobre el control fiscal en entidades de salud?
+
+Dame el tema, subtema y resumen del Artículo 231.
+
+¿Quiénes son responsables del control fiscal según el Artículo 229?
+
+🟡 Nivel 2 – Extracción estructurada
+
+¿Cuáles son las categorías del Artículo 230 y cuál es su resumen?
+
+Devuélveme en formato JSON los datos del Artículo 233.
+
+Resume en una frase el Artículo 234, sin perder la idea principal.
+
+🟠 Nivel 3 – Comparaciones y cruces
+
+Compárame las sanciones del Artículo 230 con las obligaciones de las IPS en el Artículo 232.
+
+¿Qué diferencia hay entre el control fiscal del Artículo 229 y la vigilancia de la Superintendencia del Artículo 233?
+
+¿Qué artículos tratan sobre transición y qué plazos establecen?
+
+🔴 Nivel 4 – Razonamiento y síntesis
+
+Si una EPS incumple sus obligaciones, ¿qué artículo regula las sanciones y cuáles son las posibles consecuencias?
+
+Según la Ley, ¿qué mecanismos de participación social existen para el control del sistema de salud?
+
+Integra la información de los Artículos 235 y 236 para explicar cómo fue la transición del ISS y de las entidades públicas hacia el SGSSS.
+
+⚫ Nivel 5 – Robustez y ambigüedad
+
+¿Qué dice la norma sobre la vigilancia comunitaria de los servicios de salud subsidiados?
+
+Explícame cómo se financian los hospitales públicos según la ley.
+
+¿Qué artículo creó el INVIMA y qué funciones le asigna?
+
+Si soy trabajador del sector agropecuario en 1995, ¿qué obligación tendría respecto a la afiliación al sistema de salud?
+
+👉 Estos prompts están diseñados para estresar el RAG y ver si el modelo:
+
+Recupera bien del CSV.
+
+Respeta la estructura (tema, subtema, categorías, resumen).
+
+Tolera preguntas imprecisas o con sinónimos.
+
+¿Quieres que te arme también un set de instrucciones evaluadoras? (ej. una checklist para medir si la respuesta del modelo fue correcta, incompleta o inventada).
+
+
