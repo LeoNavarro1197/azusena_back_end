@@ -4,6 +4,5 @@ azusena_whisper_env/*
 database/__pycache__/*
 azusena_api/*
 services/__pycache__/*
-benchmark_results_db_modificated.csv
-benchmark_results.csv
-benchmark_questions.txt
+test/*
+
