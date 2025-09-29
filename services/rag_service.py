@@ -98,22 +98,43 @@ class RAGService:
         Busca documentos relevantes y genera una respuesta con el LLM.
         """
         try:
+            print(f"[RAG] Iniciando consulta para: '{query}'")
+            
             # Obtener el embedding de la consulta
+            print(f"[RAG] Obteniendo embedding para la consulta...")
             query_embedding = await self.llm.get_embeddings(query)
+            print(f"[RAG] Embedding obtenido: {query_embedding is not None}")
+            
             if not query_embedding:
+                print(f"[RAG] Error: No se pudo obtener embedding")
                 return "Lo siento, no pude procesar la consulta. Por favor, intenta de nuevo más tarde."
+            
             # Convertir el embedding a un array de NumPy
+            print(f"[RAG] Convirtiendo embedding a numpy array...")
             query_embedding_np = np.array(query_embedding).astype('float32')
+            print(f"[RAG] Array numpy creado con shape: {query_embedding_np.shape}")
+            
             # Buscar documentos relevantes
+            print(f"[RAG] Buscando documentos relevantes...")
             relevant_docs = self.db.search(query_embedding_np, k=5)
+            print(f"[RAG] Documentos encontrados: {len(relevant_docs) if relevant_docs else 0}")
+            
             if not relevant_docs:
+                print(f"[RAG] No se encontraron documentos relevantes")
                 return "Lo siento, no encontré información relevante en los documentos para responder a tu pregunta."
+            
             # Generar la respuesta usando el LLM
+            print(f"[RAG] Generando respuesta con LLM...")
             full_response = ""
             async for chunk in self.llm.generate(prompt=query, relevant_docs=relevant_docs):
                 full_response += chunk
+            
+            print(f"[RAG] Respuesta generada exitosamente: {len(full_response)} caracteres")
             return full_response
 
         except Exception as e:
-            print(f"Error en la consulta: {e}")
+            print(f"[RAG] Error en la consulta: {e}")
+            print(f"[RAG] Tipo de error: {type(e)}")
+            import traceback
+            print(f"[RAG] Traceback completo: {traceback.format_exc()}")
             return "Lo siento, no pude procesar la consulta. Por favor, intenta de nuevo más tarde."
