@@ -5,11 +5,127 @@ from llm.ollama_model import OllamaModel
 import whisper
 from fastapi import UploadFile
 import os
+import re
 
 class RAGService:
     def __init__(self, db: FaissDB, llm: OllamaModel):
         self.db = db
         self.llm = llm
+
+    def _classify_query(self, query: str) -> str:
+        """
+        Clasifica el tipo de consulta para determinar el nivel de RAG necesario.
+        
+        Returns:
+        - 'simple_greeting': Solo saludo simple
+        - 'mixed_query': Saludo + solicitud de información
+        - 'specific_query': Consulta específica sin saludo
+        """
+        query_lower = query.lower().strip()
+        
+        # Patrones de saludos simples (incluyendo variaciones con comas y sin acentos)
+        simple_greetings = [
+            r'^(hola|hello|hi|buenos días|buenas tardes|buenas noches|saludos)[,\s]*\.?$',
+            r'^(hola|hello|hi)[,\s]*(azusena|sena)?[,\s]*\.?$',
+            r'^(qué tal|cómo estás|como estas|cómo está|como esta)[,\s]*\.?\??$',
+            r'^(buenas|buen día)[,\s]*\.?$',
+            r'^(hola)[,\s]+(qué tal|cómo estás|como estas|cómo está|como esta)[,\s]*\.?\??$'
+        ]
+        
+        # Patrones de palabras clave que indican solicitud de información específica
+        info_keywords = [
+            r'\b(información|datos|requisitos|proceso|procedimiento|trámite)\b',
+            r'\b(sena|aprendiz|instructor|curso|programa|certificado)\b',
+            r'\b(ley|norma|decreto|resolución|reglamento)\b',
+            r'\b(afiliación|salud|pensión|riesgos|seguridad social)\b',
+            r'\b(jubilación|retiro|beneficios|seguros)\b'
+        ]
+        
+        # Verificar si es solo un saludo simple
+        is_simple_greeting = any(re.match(pattern, query_lower) for pattern in simple_greetings)
+        
+        # Verificar si contiene solicitud de información específica
+        has_info_request = any(re.search(pattern, query_lower) for pattern in info_keywords)
+        
+        if is_simple_greeting and not has_info_request:
+            return 'simple_greeting'
+        elif has_info_request:
+            return 'mixed_query' if is_simple_greeting else 'specific_query'
+        else:
+            # Si no es un saludo simple reconocido, tratarlo como consulta específica
+            return 'specific_query'
+
+    def _filter_relevant_docs(self, docs: list, query: str, max_docs: int = 3) -> list:
+        """
+        Filtra documentos relevantes con mayor precisión semántica.
+        """
+        if not docs:
+            return []
+        
+        # Palabras clave que indican documentos de comportamiento/saludos que queremos evitar para consultas técnicas
+        behavior_keywords = [
+            'saludo', 'cortesía', 'comportamiento', 'identidad', 'directrices',
+            'greeting', 'courtesy', 'behavior', 'identity', 'guidelines',
+            'presentación', 'introducción', 'bienvenida', 'filosofía pedagógica'
+        ]
+        
+        # Palabras clave técnicas que indican contenido relevante
+        technical_keywords = [
+            'ley', 'artículo', 'decreto', 'resolución', 'procedimiento', 'requisito',
+            'trámite', 'normativa', 'reglamento', 'código', 'estatuto', 'ordenanza',
+            'sena', 'formación', 'aprendiz', 'instructor', 'programa', 'curso',
+            'certificación', 'competencia', 'evaluación', 'titulación'
+        ]
+        
+        filtered_docs = []
+        query_lower = query.lower()
+        
+        # Determinar si la consulta busca información técnica específica
+        is_technical_query = any(keyword in query_lower for keyword in technical_keywords)
+        
+        for doc in docs:
+            doc_content = doc.get('content', '').lower() if isinstance(doc, dict) else doc.lower()
+            doc_score = 0
+            
+            # Calcular relevancia del documento
+            if is_technical_query:
+                # Para consultas técnicas, priorizar documentos con contenido técnico
+                technical_matches = sum(1 for keyword in technical_keywords if keyword in doc_content)
+                behavior_matches = sum(1 for keyword in behavior_keywords if keyword in doc_content)
+                
+                # Penalizar documentos que son principalmente sobre comportamiento
+                if behavior_matches > technical_matches and technical_matches == 0:
+                    continue  # Saltar documentos puramente de comportamiento
+                
+                doc_score = technical_matches - (behavior_matches * 0.5)
+            else:
+                # Para consultas generales, permitir más flexibilidad
+                doc_score = 1
+            
+            # Verificar relevancia directa con palabras de la consulta
+            query_words = query_lower.split()
+            content_matches = sum(1 for word in query_words if len(word) > 3 and word in doc_content)
+            doc_score += content_matches
+            
+            if doc_score > 0:
+                if isinstance(doc, dict):
+                    doc['relevance_score'] = doc_score
+                    filtered_docs.append(doc)
+                else:
+                    filtered_docs.append({'content': doc, 'relevance_score': doc_score})
+        
+        # Ordenar por relevancia y tomar los mejores
+        filtered_docs.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+        
+        # Retornar en el formato original
+        result = []
+        for doc in filtered_docs[:max_docs]:
+            if isinstance(doc, dict) and 'content' in doc:
+                result.append(doc['content'])
+            else:
+                result.append(doc)
+        
+        return result
 
     async def ingest_document(self, document: str):
         """
@@ -95,33 +211,53 @@ class RAGService:
 
     async def query_documents(self, query: str):
         """
-        Busca documentos relevantes y genera una respuesta con el LLM.
+        Consulta documentos usando RAG con clasificación inteligente de consultas.
         """
         try:
-            print(f"[RAG] Iniciando consulta para: '{query}'")
+            print(f"[RAG] Procesando consulta: {query}")
             
-            # Obtener el embedding de la consulta
-            print(f"[RAG] Obteniendo embedding para la consulta...")
+            # Clasificar el tipo de consulta
+            query_type = self._classify_query(query)
+            print(f"[RAG] Tipo de consulta detectado: {query_type}")
+            
+            # Para saludos simples, usar RAG mínimo o ninguno
+            if query_type == 'simple_greeting':
+                print(f"[RAG] Procesando saludo simple sin RAG extensivo")
+                # Generar respuesta directa sin documentos adicionales
+                full_response = ""
+                async for chunk in self.llm.generate(prompt=query, relevant_docs=[]):
+                    full_response += chunk
+                return full_response
+            
+            # Para consultas específicas o mixtas, usar RAG completo
+            print(f"[RAG] Generando embeddings para la consulta...")
             query_embedding = await self.llm.get_embeddings(query)
-            print(f"[RAG] Embedding obtenido: {query_embedding is not None}")
             
-            if not query_embedding:
-                print(f"[RAG] Error: No se pudo obtener embedding")
-                return "Lo siento, no pude procesar la consulta. Por favor, intenta de nuevo más tarde."
+            if query_embedding is None:
+                print(f"[RAG] Error: No se pudieron generar embeddings")
+                return "Lo siento, no pude procesar tu consulta. Por favor, intenta de nuevo."
             
             # Convertir el embedding a un array de NumPy
             print(f"[RAG] Convirtiendo embedding a numpy array...")
             query_embedding_np = np.array(query_embedding).astype('float32')
             print(f"[RAG] Array numpy creado con shape: {query_embedding_np.shape}")
             
-            # Buscar documentos relevantes
-            print(f"[RAG] Buscando documentos relevantes...")
-            relevant_docs = self.db.search(query_embedding_np, k=5)
-            print(f"[RAG] Documentos encontrados: {len(relevant_docs) if relevant_docs else 0}")
+            print(f"[RAG] Buscando documentos similares...")
+            # Ajustar el número de documentos según el tipo de consulta
+            k = 3 if query_type == 'mixed_query' else 5
+            similar_docs = self.db.search(query_embedding_np, k=k)
+            
+            if not similar_docs:
+                print(f"[RAG] No se encontraron documentos similares")
+                return "Lo siento, no encontré información relevante para tu consulta."
+            
+            # Filtrar documentos relevantes
+            relevant_docs = self._filter_relevant_docs(similar_docs, query, max_docs=3)
+            print(f"[RAG] Documentos filtrados: {len(relevant_docs)}")
             
             if not relevant_docs:
-                print(f"[RAG] No se encontraron documentos relevantes")
-                return "Lo siento, no encontré información relevante en los documentos para responder a tu pregunta."
+                print(f"[RAG] No se encontraron documentos relevantes después del filtrado")
+                return "Lo siento, no encontré información específica para tu consulta."
             
             # Generar la respuesta usando el LLM
             print(f"[RAG] Generando respuesta con LLM...")

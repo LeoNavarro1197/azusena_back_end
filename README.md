@@ -64,7 +64,8 @@ El proyecto sigue una arquitectura moderna en capas con comunicación en tiempo 
 
 El sistema está configurado para usar `mistral:7b`, pero soporta otros modelos:
 - `mistral:7b` (recomendado)
-- `tinyllama:1.1b` (unico modelo de llama con licencia 100% de codigo abierto)
+- `tinyllama:1.1b` (unico modelo de llama con licencia 100% de codigo abierto, y altamente optimizado para ser ejecutado en servidores con recursos limitados, pero con menor precisión)
+- `phi3:3.8b` (requiere un servidor con una gpu con cuda, y alta capacidad de VRAM)
 - `deepseek-r1:8b` (requiere un servidor con una gpu con cuda, y alta capacidad de VRAM)
 - `qwen3:4b` (requiere un servidor con una gpu con cuda, y alta capacidad de VRAM) 
 
