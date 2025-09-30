@@ -6,7 +6,7 @@ import logging
 load_dotenv()
 
 class Config:
-    # Selección de local o OpenAI
+    # Selección de local u OpenAI
     USE_LOCAL_MODEL = os.getenv('USE_LOCAL_MODEL', 'False').lower() == 'true'
     
     # API Key de OpenAI desde variable de entorno

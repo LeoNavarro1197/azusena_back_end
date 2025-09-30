@@ -152,7 +152,7 @@ class VectorDB:
             # Aplicar ponderación semántica
             weighted_score = self._calculate_weighted_similarity(query_text, distance, self.df.iloc[idx])
             
-            if weighted_score >= 0.65:  # Umbral ajustado para mejor precisión
+            if weighted_score >= 0.5:  # Umbral reducido para incluir más artículos relevantes
                 valid_results.append({
                     'index': idx,
                     'similarity': float(weighted_score),
@@ -263,9 +263,28 @@ class VectorDB:
         for theme, results in themes_groups.items():
             subtemas = list(set([r['data']['subtema'] for r in results]))
             articles_count = len(results)
-            response += f"🔹 **{theme.upper()}** ({articles_count} artículo{'s' if articles_count > 1 else ''})\n"
-            if subtemas and subtemas[0]:  # Si hay subtemas
-                response += f"   Subtemas: {', '.join(subtemas)}\n"
+            
+            # Obtener los números específicos de artículos y verificar que existen
+            article_numbers = []
+            for r in results:
+                article_num = str(r['data']['articulo']).strip()
+                # Verificar que el artículo no esté vacío y sea válido
+                if article_num and article_num != 'nan' and article_num != '':
+                    article_numbers.append(article_num)
+            
+            # Solo mostrar el tema si tiene artículos válidos
+            if not article_numbers:
+                continue
+                
+            article_numbers_str = ', '.join(article_numbers)
+            actual_count = len(article_numbers)
+            
+            response += f"🔹 **{theme.upper()}** ({actual_count} artículo{'s' if actual_count > 1 else ''})\n"
+            response += f"   **Artículos:** {article_numbers_str}\n"
+            if subtemas and subtemas[0] and subtemas[0] != 'nan':  # Si hay subtemas válidos
+                valid_subtemas = [s for s in subtemas if s and s != 'nan' and s.strip()]
+                if valid_subtemas:
+                    response += f"   **Subtemas:** {', '.join(valid_subtemas)}\n"
             response += "\n"
         
         response += "¿Podrías especificar sobre qué tema te gustaría obtener más información?"
