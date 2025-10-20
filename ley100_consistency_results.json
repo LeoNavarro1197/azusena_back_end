@@ -1,0 +1,66 @@
+[
+  {
+    "success": true,
+    "response": "En la Ley 100 de 1993, los artículos que hablan sobre calidad en los servicios de salud son el artículo 186, que se refiere a la implementación de un sistema de acreditación para garantizar la transparencia y calidad de las IPS, y el artículo 227, que establece normas para garantizar la calidad de la atención de salud, incluyendo auditorías médicas y transparencia en la información. Estos artículos son fundamentales para velar por la calidad en la prestación de servicios de salud en Colombia. ¿Necesitas más información específica sobre algún aspecto en particular de estos artículos?",
+    "similarity": 0.7191887140274048,
+    "used_kb": true,
+    "query": "cuales son los articulos que hablan sobre calidad en la ley 100 del 93",
+    "test_name": "Consulta Original - Artículos sobre Calidad"
+  },
+  {
+    "success": true,
+    "response": "**Artículo 186**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Evaluación de calidad de IPS\n\n**Subtema:** Información y mejoramiento\n\n**Contenido:**\nDel Sistema de Acreditación. El Gobierno Nacional propiciará la conformación de un sistema de acreditación de las Instituciones Prestadoras de Servicios de Salud, para brindar información a los usuarios sobre su calidad y promover su mejoramiento.\n\n**Resumen:** Se implementa un sistema de acreditación para garantizar transparencia y calidad de las IPS.",
+    "similarity": 1.0,
+    "used_kb": true,
+    "query": "que dice exactamente el articulo 186 de la ley 100",
+    "test_name": "Consulta Específica - Artículo 186"
+  },
+  {
+    "success": true,
+    "response": "**Artículo 227**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Garantía de calidad en servicios de salud\n\n**Subtema:** Normas y auditoría médica\n\n**Contenido:**\nControl y Evaluación de la Calidad del Servicio de Salud. Es facultad del Gobierno Nacional expedir las normas relativas a la organización de un sistema obligatorio.\n\n**Resumen:** Establece normas para garantizar la calidad de la atención de salud, incluyendo auditorías médicas y transparencia de la información.",
+    "similarity": 1.0,
+    "used_kb": true,
+    "query": "que dice exactamente el articulo 227 de la ley 100",
+    "test_name": "Consulta Específica - Artículo 227"
+  },
+  {
+    "success": true,
+    "response": "**Artículo 106**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Administradoras de Fondos de Pensiones\n\n**Subtema:** Normas de publicidad\n\n**Contenido:**\nPublicidad. Toda publicidad o promoción de las actividades de las administradoras deberá sujetarse a las normas que sobre el particular determine la Superintendencia Bancaria, en orden a velar porque aquélla sea veraz y precisa; tal publicidad solamente podrá contratarse con cargo al presupuesto de gastos administrativos de la entidad.\n\nEn todo caso, todas las administradoras deberán publicar, con la periodicidad y en la forma que al efecto determine la misma Superintendencia, el costo de las primas que sean pagadas por concepto de seguros y el valor de las comisiones cobradas.\n\nEl gobierno eliminará privilegios provenientes de grupos con capacidad de control de medios masivos, y en su caso impedir que sean los beneficiarios quienes directa o indirectamente absorban costos de publicidad.\n\n**Resumen:** Toda publicidad debe ser veraz, precisa y financiada solo con presupuesto administrativo. Administradoras deben publicar costos de primas y comisiones periódicamente.",
+    "similarity": 1.0,
+    "used_kb": true,
+    "query": "articulo 106 ley 100 normas de publicidad",
+    "test_name": "Consulta Específica - Artículo 106"
+  },
+  {
+    "success": true,
+    "response": "**Artículo 3**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Garantía estatal y ampliación progresiva de cobertura\n\n**Subtema:** Garantía del Estado de seguridad social universal mediante un Sistema de Seguridad Social Integral que amplíe progresivamente la cobertura a todos los sectores de la población, en términos establecidos por la presente Ley.\n\n**Contenido:**\nDel Derecho a la Seguridad Social. El Estado garantiza a todos los habitantes del territorio nacional, el derecho irrenunciable a la seguridad social. Este servicio será prestado por el Sistema de Seguridad Social Integral, en orden a la ampliación progresiva de la cobertura a todos los sectores de la población, en los términos establecidos por la presente Ley.\n\n**Resumen:** El Estado garantiza a todos los habitantes el derecho irrenunciable a la seguridad social. Este derecho se materializa a través del Sistema de Seguridad Social Integral, el cual debe ampliar progresivamente su cobertura a todos los sectores de la población, conforme a lo establecido en la Ley.",
+    "similarity": 1.0,
+    "used_kb": true,
+    "query": "articulo 3 ley 100 derecho seguridad social",
+    "test_name": "Consulta Específica - Artículo 3"
+  },
+  {
+    "success": true,
+    "response": "**Artículo 182**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Financiamiento de EPS\n\n**Subtema:** UPC y manejo de recursos\n\n**Contenido:**\nDe los ingresos de las Entidades Promotoras de Salud. Las cotizaciones que recauden las Entidades Promotoras de Salud pertenecen al Sistema General de Seguridad Social en Salud. Por la organización y garantía de la prestación de los servicios incluidos en el Plan de Salud Obligatorio para cada afiliado, el Sistema General de Seguridad Social en Salud reconocerá a cada Entidad Promotora de Salud un valor per cápita, que se denominará Unidad de Pago por Capitación, UPC. Esta Unidad se establecerá en función del perfil epidemiológico de la población relevante, de los riegos cubiertos y de los costos de prestación del servicio en condiciones medias de calidad, tecnología y hotelería y será definida por el Consejo Nacional de Seguridad Social en Salud, de acuerdo con los estudios técnicos del Ministerio de Salud. PARÁGRAFO 1. Las Entidades Promotoras de Salud manejarán los recursos de la seguridad social originados en las cotizaciones de los afiliados al sistema en cuentas independientes del resto de rentas y bienes de la entidad.\n\n**Resumen:** Regula ingresos de EPS mediante UPC y cotizaciones, estableciendo criterios de cálculo y manejo independiente de recursos.",
+    "similarity": 1.0,
+    "used_kb": true,
+    "query": "articulo 182 ley 100 ingresos EPS UPC",
+    "test_name": "Consulta Específica - Artículo 182"
+  },
+  {
+    "success": true,
+    "response": "La Ley 100 de 1993 establece la implementación de un sistema de acreditación para las Instituciones Prestadoras de Servicios de Salud (IPS), con el objetivo de garantizar transparencia y calidad en la atención de los usuarios. Este sistema busca proporcionar información a los usuarios sobre la calidad de las IPS y promover su mejora continua. Además, las IPS deben garantizar un adecuado sistema de información de sus servicios y atención a los usuarios, incluyendo una línea telefónica abierta con atención permanente las 24 horas. Por otro lado, las IPS tienen obligaciones de control, auditoría y revisoría fiscal, salvo en casos excepcionales definidos por el Ministerio de Salud.\n\nSi necesitas más información específica sobre cómo funciona el sistema de acreditación de calidad para las IPS según la Ley 100 de 1993, por favor dime para poder ayudarte mejor.",
+    "similarity": 0.7195443391799927,
+    "used_kb": true,
+    "query": "sistema de acreditacion calidad IPS ley 100",
+    "test_name": "Consulta Temática - Acreditación y Calidad"
+  },
+  {
+    "success": true,
+    "response": "La Ley 100 de 1993 establece normas para garantizar la calidad en los servicios de salud, incluyendo la realización de auditorías médicas para evaluar la atención brindada. También se menciona la importancia de la transparencia en la información, como en el caso de implementar un sistema de acreditación para las Instituciones Prestadoras de Servicios de Salud (IPS). Esto busca brindar a los usuarios información clara sobre la calidad de las IPS y promover su mejora continua. Además, se regula la recopilación de información sobre calidad de servicios y satisfacción de usuarios, con el objetivo de promover una evaluación continua.\n\nPara poder darte una respuesta más detallada, ¿hay algo en específico sobre auditorías médicas, transparencia en la calidad de la atención en salud o la Ley 100 de 1993 que te gustaría saber? ¡Estoy aquí para ayudarte!",
+    "similarity": 0.7606979489326477,
+    "used_kb": true,
+    "query": "auditorias medicas transparencia calidad atencion salud ley 100",
+    "test_name": "Consulta Temática - Auditorías y Calidad"
+  }
+]

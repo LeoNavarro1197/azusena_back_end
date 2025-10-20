@@ -43,7 +43,7 @@ def query():
         print(f"[PRINT DEBUG] Datos recibidos: {data}")
         logging.info(f"Datos recibidos: {data}")
         
-        query_text = data.get("query_text")
+        query_text = data.get("query") or data.get("query_text")
         print(f"[PRINT DEBUG] Query extraído: '{query_text}'")
         logging.info(f"Query text extraído: '{query_text}'")
 
@@ -75,7 +75,12 @@ def query():
             "similarity": similarity_score,
             "used_knowledge_base": used_kb
         }
-        socketio.emit("final_response", response)
+        # Enviar respuesta por WebSocket si hay conexión activa
+        try:
+            socketio.emit("final_response", response)
+        except Exception as socket_error:
+            print(f"[DEBUG] No se pudo enviar por WebSocket: {socket_error}")
+        
         return jsonify(response)
 
     except Exception as e:
@@ -86,10 +91,19 @@ def query():
         logging.error(f"Traceback completo: {traceback.format_exc()}")
         
         response = {
-            "response": "📋 **Información sobre SEGURIDAD SOCIAL:**\n\n• **Art. 1** (LEY 100 DE 1993): Establece los principios fundamentales que rigen el sistema de seguridad social en Colombia.\n\n¿Necesitas información más detallada de algún artículo específico?",
+            "response": f"Lo siento, hubo un problema al procesar tu consulta: {str(e)}",
             "similarity": 0.0,
             "used_knowledge_base": False
         }
         print(f"[PRINT DEBUG ERROR] Devolviendo respuesta de error: {response}")
-        socketio.emit("final_response", response)
+        # Enviar respuesta de error por WebSocket si hay conexión activa
+        try:
+            socketio.emit("final_response", response)
+        except Exception as socket_error:
+            print(f"[DEBUG] No se pudo enviar error por WebSocket: {socket_error}")
+        
         return jsonify(response)
+
+def init_app(app):
+    """Inicializa las rutas en la aplicación Flask."""
+    app.register_blueprint(bp)

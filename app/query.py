@@ -1,11 +1,13 @@
+import os
 import logging
+import traceback
+import openai
+import httpx
 import emoji
 from openai import OpenAI
-from .config import Config
+from app.config import Config
 from app.models.vector_db import vector_db
 import re
-import traceback
-import httpx
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,7 +25,7 @@ class QueryRAGSystem:
             api_key=Config.OPENAI_API_KEY,
             http_client=client
         )
-        self.min_similarity_score = 0.65
+        self.min_similarity_score = 0.55  # Reducido para incluir más consultas de salud
         logging.info(f"API Key configurada: {'Presente' if Config.OPENAI_API_KEY else 'No presente'}")
 
     def clean_text(self, texto: str) -> str:
@@ -35,6 +37,189 @@ class QueryRAGSystem:
         # Normalizar espacios
         texto = ' '.join(texto.split())
         return texto
+
+    def is_article_list_query(self, query_text):
+        """Detecta si la consulta solicita una lista de artículos."""
+        query_lower = query_text.lower()
+        article_list_patterns = [
+            r'qu[eé]\s+art[ií]culos',
+            r'cu[aá]les\s+art[ií]culos',
+            r'lista\s+de\s+art[ií]culos',
+            r'todos\s+los\s+art[ií]culos',
+            r'art[ií]culos\s+sobre',
+            r'art[ií]culos\s+relacionados',
+            r'qu[eé]\s+normas',
+            r'cu[aá]les\s+normas',
+            r'dime\s+que\s+art[ií]culos',
+            r'muestra\s+art[ií]culos',
+            r'busca\s+art[ií]culos'
+        ]
+        
+        for pattern in article_list_patterns:
+            if re.search(pattern, query_lower):
+                return True
+        return False
+
+    def _generate_direct_response(self, results, query_text):
+        """Genera una respuesta directa basada en los resultados más relevantes."""
+        try:
+            if not results:
+                return f"No encontré información específica sobre '{query_text}' en mi base de datos."
+            
+            # Tomar el resultado más relevante
+            best_result = results[0]['data']
+            
+            # Extraer información relevante
+            article_num = best_result.get('articulo', 'N/A')
+            source = best_result.get('fuente', 'N/A')
+            theme = best_result.get('tema', 'N/A')
+            subtheme = best_result.get('subtema', '')
+            summary = best_result.get('resumen_explicativo', '')
+            full_text = best_result.get('texto_del_articulo', '')
+            
+            # Construir respuesta directa y clara
+            response = f"**{theme}**\n\n"
+            
+            # Añadir información del procedimiento/respuesta
+            if summary and str(summary).strip() not in ['', 'nan', 'None', 'null']:
+                response += f"{summary}\n\n"
+            elif full_text and str(full_text).strip() not in ['', 'nan', 'None', 'null']:
+                # Si no hay resumen pero sí texto completo, usar un extracto
+                extract = full_text[:300] + "..." if len(full_text) > 300 else full_text
+                response += f"{extract}\n\n"
+            
+            # Añadir referencia al artículo de forma más simple
+            response += f"**Referencia:** Artículo {article_num} - {source}"
+            if subtheme and str(subtheme).strip() not in ['', 'nan', 'None', 'null']:
+                response += f" ({subtheme})"
+            response += "\n\n"
+            
+            # Añadir información de artículos relacionados si hay más resultados
+            if len(results) > 1:
+                response += "**Artículos relacionados:**\n"
+                for i in range(1, min(4, len(results))):
+                    related = results[i]['data']
+                    response += f"• Art. {related.get('articulo', 'N/A')} - {related.get('tema', 'N/A')}"
+                    if related.get('subtema') and str(related.get('subtema')).strip() not in ['', 'nan', 'None', 'null']:
+                        response += f" ({related.get('subtema')})"
+                    response += "\n"
+            
+            logging.info("Generada respuesta directa estructurada con información legal")
+            return response
+            
+        except Exception as e:
+            logging.error(f"Error generando respuesta directa: {e}")
+            return f"Encontré información sobre '{query_text}', pero hubo un error al procesarla. Por favor, intenta reformular tu pregunta."
+
+    def _validate_article_mentions(self, response_text):
+        """Valida que los artículos mencionados en la respuesta existan realmente en la base de datos."""
+        import re
+        
+        # Extraer números de artículos mencionados
+        article_numbers = re.findall(r'art[íi]culo\s*(\d+)', response_text.lower())
+        
+        if not article_numbers:
+            return response_text, True  # No hay artículos que validar
+        
+        validated_articles = []
+        invalid_articles = []
+        
+        for art_num in set(article_numbers):  # Eliminar duplicados
+            try:
+                # Verificar si el artículo existe
+                article_response, similarity, used_kb = vector_db.get_article_details(art_num)
+                
+                if "❌ **Artículo No Encontrado**" in article_response:
+                    invalid_articles.append(art_num)
+                    logging.warning(f"Artículo {art_num} mencionado pero no existe en la base de datos")
+                else:
+                    validated_articles.append(art_num)
+                    logging.info(f"Artículo {art_num} validado correctamente")
+                    
+            except Exception as e:
+                logging.error(f"Error validando artículo {art_num}: {e}")
+                invalid_articles.append(art_num)
+        
+        # Si hay artículos inválidos, modificar la respuesta
+        if invalid_articles:
+            logging.warning(f"Se encontraron artículos inválidos: {invalid_articles}")
+            
+            # Crear una respuesta más conservadora
+            if validated_articles:
+                response_text = f"Encontré información sobre calidad en la Ley 100 de 1993. Los artículos verificados que tratan este tema incluyen: {', '.join(validated_articles)}. Para obtener información específica sobre algún artículo, por favor pregúntame directamente por el número del artículo."
+            else:
+                response_text = "Encontré información relacionada con calidad en la Ley 100 de 1993, pero para brindarte información precisa sobre artículos específicos, por favor pregúntame por el número exacto del artículo que te interesa."
+            
+            return response_text, False
+        
+        return response_text, True
+
+    def _validate_thematic_consistency(self, query_text, response_text):
+        """Valida que la respuesta sea temáticamente consistente con la consulta."""
+        query_lower = query_text.lower()
+        response_lower = response_text.lower()
+        
+        # Definir términos clave y sus sinónimos
+        key_terms = {
+            'calidad': ['calidad', 'calidad de servicio', 'calidad de atención', 'estándares'],
+            'artículo': ['artículo', 'art.', 'artículos'],
+            'ley 100': ['ley 100', 'ley 100 de 1993', 'ley cien'],
+            'salud': ['salud', 'servicios de salud', 'atención médica', 'sistema de salud'],
+            'acreditación': ['acreditación', 'acreditar', 'certificación'],
+            'auditoría': ['auditoría', 'auditorías', 'control', 'evaluación']
+        }
+        
+        consistency_issues = []
+        
+        # Verificar consistencia temática principal
+        for main_term, synonyms in key_terms.items():
+            query_has_term = any(term in query_lower for term in synonyms)
+            response_has_term = any(term in response_lower for term in synonyms)
+            
+            if query_has_term and not response_has_term:
+                consistency_issues.append(f"Consulta menciona '{main_term}' pero respuesta no")
+        
+        # Si hay problemas de consistencia significativos, marcar como inconsistente
+        if len(consistency_issues) > 1:  # Más de un problema temático
+            logging.warning(f"Problemas de consistencia temática detectados: {consistency_issues}")
+            return False, consistency_issues
+        
+        return True, []
+
+    def _improve_response_coherence(self, query_text, response_text):
+        """Mejora la coherencia de la respuesta basándose en la consulta."""
+        
+        # 1. Validar artículos mencionados
+        response_text, articles_valid = self._validate_article_mentions(response_text)
+        
+        # 2. Validar consistencia temática
+        is_consistent, issues = self._validate_thematic_consistency(query_text, response_text)
+        
+        # 3. Si hay problemas de consistencia, generar una respuesta más conservadora
+        if not is_consistent or not articles_valid:
+            logging.info("Generando respuesta más conservadora debido a problemas de consistencia")
+            
+            # Buscar información relevante de manera más específica
+            top_results = vector_db.get_top_results(query_text, top_k=3)
+            
+            if top_results and top_results[0]['similarity'] >= 0.6:
+                # Crear respuesta basada en resultados verificados
+                verified_info = []
+                for result in top_results:
+                    data = result['data']
+                    article_num = data.get('articulo', '')
+                    theme = data.get('tema', '')
+                    source = data.get('fuente', '')
+                    
+                    if article_num and theme and source:
+                        verified_info.append(f"Artículo {article_num} ({source}): {theme}")
+                
+                if verified_info:
+                    response_text = f"Basándome en mi base de datos verificada, encontré la siguiente información relevante:\n\n" + "\n".join(verified_info) + "\n\n¿Te gustaría obtener más detalles sobre algún artículo específico?"
+                else:
+                    response_text = "Encontré información relacionada con tu consulta, pero para brindarte datos precisos y verificados, por favor especifica qué aspecto particular te interesa conocer."
+        
+        return response_text
 
     def query_rag(self, query_text: str) -> tuple:
         """Consulta el sistema RAG y devuelve la mejor respuesta disponible con información de similitud."""
@@ -48,41 +233,49 @@ class QueryRAGSystem:
             # NUEVA LÓGICA: Detectar si se solicita un artículo específico
             import re
             article_pattern = r'(?:artículo|articulo|art\.?)\s*(\d+)'
-            article_match = re.search(article_pattern, query_text.lower())
+            match = re.search(article_pattern, query_text.lower())
             
-            if article_match:
-                article_number = article_match.group(1)
-                logging.info(f"Detectado solicitud de artículo específico: {article_number}")
-                
-                # Llamar directamente a get_article_details
-                article_response = self.get_article_details(article_number)
-                
-                # Actualizar historial
-                conversation_history.append({
-                    "role": "user",
-                    "content": query_text
-                })
-                conversation_history.append({
-                    "role": "assistant",
-                    "content": article_response
-                })
-                
-                # Mantener el historial manejable
-                if len(conversation_history) > 10:
-                    conversation_history = conversation_history[-10:]
-                
-                return article_response, 1.0, True  # Máxima similitud porque es exacto
+            if match:
+                article_number = match.group(1)
+                logging.info(f"Solicitud de artículo específico detectada: {article_number}")
+                return vector_db.get_article_details(article_number)
 
-            # Buscar respuestas similares en FAISS
-            best_response, similarity_score = vector_db.find_similar_question(query_text, top_k=20)
-            logging.info(f"Score de similitud: {similarity_score}")
+            # NUEVA LÓGICA: Detectar si es una consulta de lista de artículos
+            if self.is_article_list_query(query_text):
+                logging.info("Consulta de lista de artículos detectada - usando formato estándar")
+                # Proceder con la búsqueda estándar para mostrar lista de artículos
+                # No hacer nada especial, continuar con la lógica normal
+            else:
+                logging.info("Consulta específica detectada - generando respuesta con IA")
+                # Para consultas específicas, usar OpenAI con contexto de la base de datos
+                top_results = vector_db.get_top_results(query_text, top_k=5)
+                if top_results and top_results[0]['similarity'] >= 0.3:  # Umbral más bajo para contexto
+                    # Crear contexto con la información relevante encontrada
+                    context_info = self._prepare_context_from_results(top_results)
+                    ai_response = self.query_openai_with_context(query_text, context_info)
+                    
+                    # NUEVA MEJORA: Validar y mejorar coherencia de la respuesta
+                    improved_response = self._improve_response_coherence(query_text, ai_response)
+                    
+                    return improved_response, top_results[0]['similarity'], True
+                else:
+                    # Si no hay información relevante, usar OpenAI sin contexto específico
+                    logging.info("No se encontró información relevante, consultando OpenAI sin contexto específico")
+                    context = self.get_context_from_history()
+                    response = self.query_openai(query_text, context)
+                    return response, 0.0, False
 
+            # Buscar preguntas similares en FAISS
+            response, similarity_score = vector_db.find_similar_question(query_text)
+            
+            # NUEVA MEJORA: Validar coherencia también para respuestas de la base de conocimientos
             if similarity_score >= self.min_similarity_score:
                 logging.info("Usando respuesta de la base de conocimiento")
-                response = best_response
+                improved_response = self._improve_response_coherence(query_text, response)
                 used_kb = True
+                response = improved_response
             else:
-                logging.info("No se encontró una respuesta suficientemente similar, consultando OpenAI")
+                logging.info(f"Similitud baja ({similarity_score:.3f}), consultando OpenAI...")
                 context = self.get_context_from_history()
                 response = self.query_openai(query_text, context)
                 used_kb = False
@@ -107,7 +300,7 @@ class QueryRAGSystem:
             logging.error(f"Error en query_rag: {str(e)}")
             logging.error(f"Traceback completo: {traceback.format_exc()}")
             return f"Lo siento, hubo un problema al procesar tu consulta: {str(e)}", 0.0, False
-    
+
     def search_by_theme(self, theme: str, subtema: str = None) -> str:
         """Busca artículos específicamente por tema y subtema."""
         try:
@@ -210,7 +403,159 @@ class QueryRAGSystem:
                            for msg in recent_history])
         return context
 
+    def _prepare_context_from_results(self, results):
+        """Prepara el contexto basado en los resultados de la búsqueda."""
+        context_parts = []
+        context_parts.append("INFORMACIÓN RELEVANTE DE LA BASE DE DATOS:")
+        
+        for i, result in enumerate(results[:3]):  # Usar solo los 3 más relevantes
+            data = result['data']
+            similarity = result['similarity']
+            
+            context_parts.append(f"\n--- Resultado {i+1} (Similitud: {similarity:.3f}) ---")
+            context_parts.append(f"Artículo: {data.get('articulo', 'N/A')}")
+            context_parts.append(f"Fuente: {data.get('fuente', 'N/A')}")
+            context_parts.append(f"Tema: {data.get('tema', 'N/A')}")
+            context_parts.append(f"Subtema: {data.get('subtema', 'N/A')}")
+            
+            # Incluir resumen si está disponible
+            if data.get('resumen_explicativo') and str(data.get('resumen_explicativo')).strip() not in ['', 'nan', 'None', 'null']:
+                context_parts.append(f"Resumen: {data.get('resumen_explicativo')}")
+            
+            # Incluir texto del artículo si está disponible
+            if data.get('texto_del_articulo') and str(data.get('texto_del_articulo')).strip() not in ['', 'nan', 'None', 'null']:
+                text = data.get('texto_del_articulo')
+                # Limitar el texto para no sobrecargar el contexto
+                if len(text) > 500:
+                    text = text[:500] + "..."
+                context_parts.append(f"Texto del artículo: {text}")
+        
+        return "\n".join(context_parts)
+
+    def query_openai_with_context(self, query_text: str, context_info: str) -> str:
+        """Consulta OpenAI con contexto específico de la base de datos."""
+        try:
+            logging.info("Iniciando consulta a OpenAI con contexto específico")
+            
+            # Verificar que la API key esté configurada
+            if not Config.OPENAI_API_KEY or Config.OPENAI_API_KEY == "KEY_NO_DEFINIDA":
+                logging.error("API Key de OpenAI no configurada")
+                return "Lo siento, no puedo procesar tu consulta en este momento. La configuración de OpenAI no está disponible."
+            
+            import openai
+            openai.api_key = Config.OPENAI_API_KEY
+            
+            system_prompt = """Eres AzuSENA, asistente virtual del SENA de Colombia.
+
+INSTRUCCIONES CRÍTICAS:
+1. Responde de manera natural y conversacional, como si fueras un experto humano
+2. NO menciones que eres una IA o que estás consultando una base de datos
+3. NO uses formatos de lista con viñetas o estructuras rígidas
+4. Redacta respuestas fluidas y naturales basadas en la información proporcionada
+5. Si la información no es suficiente para responder completamente, di que necesitas más detalles específicos
+
+FORMATO DE RESPUESTA:
+- Respuesta directa y natural
+- Explicación clara del procedimiento o información solicitada
+- Menciona las referencias legales de forma natural en el texto
+- Termina preguntando si necesita más información específica
+
+PROHIBIDO:
+- Usar listas con viñetas (•)
+- Usar formatos estructurados rígidos
+- Mencionar "base de datos" o "sistema"
+- Decir "según mi base de datos"
+- Usar emojis excesivos"""
+
+            user_prompt = f"""Pregunta del usuario: {query_text}
+
+{context_info}
+
+Responde de manera natural y conversacional basándote en la información proporcionada. Si la información es relevante, úsala para dar una respuesta completa. Si no es suficiente, explica qué información adicional necesitarías."""
+
+            # Configurar cliente OpenAI
+            client = OpenAI(api_key=Config.OPENAI_API_KEY)
+            
+            if not Config.OPENAI_API_KEY or Config.OPENAI_API_KEY == "KEY_NO_DEFINIDA":
+                logging.error("API Key de OpenAI no configurada")
+                return "Lo siento, el servicio de consulta no está disponible en este momento."
+
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=800,
+                temperature=0.7
+            )
+            
+            ai_response = response.choices[0].message.content.strip()
+            logging.info("Respuesta de OpenAI generada exitosamente")
+            return ai_response
+            
+        except Exception as e:
+            logging.error(f"Error consultando OpenAI con contexto: {str(e)}")
+            return f"Lo siento, no pude procesar tu consulta en este momento. Por favor, intenta reformular tu pregunta o consulta más tarde."
+
     def query_openai(self, query_text: str, context: str = "") -> str:
+        """Consulta OpenAI para respuestas generales sin contexto específico."""
+        try:
+            logging.info("Iniciando consulta a OpenAI sin contexto específico")
+            
+            # Verificar que la API key esté configurada
+            if not Config.OPENAI_API_KEY:
+                logging.error("API Key de OpenAI no configurada")
+                return "Lo siento, no puedo procesar tu consulta en este momento. La configuración de OpenAI no está disponible."
+            
+            # Configurar cliente OpenAI
+            client = OpenAI(api_key=Config.OPENAI_API_KEY)
+            
+            system_prompt = """Eres AzuSENA, asistente virtual del SENA de Colombia.
+
+INSTRUCCIONES CRÍTICAS:
+1. Responde de manera natural y conversacional
+2. Proporciona información general sobre procedimientos administrativos colombianos
+3. Si no tienes información específica, sé honesto al respecto
+4. Sugiere consultar fuentes oficiales cuando sea apropiado
+5. Mantén un tono profesional pero amigable
+
+FORMATO DE RESPUESTA:
+- Respuesta directa y natural
+- Información general disponible
+- Sugerencias de fuentes oficiales si es necesario
+- Pregunta si necesita más ayuda específica
+
+PROHIBIDO:
+- Inventar información específica de leyes o artículos
+- Dar información incorrecta
+- Usar formatos excesivamente estructurados"""
+
+            user_prompt = f"""Pregunta del usuario: {query_text}
+
+{context if context else ""}
+
+Responde de manera natural proporcionando la información general que tengas disponible. Si no tienes información específica, sugiere fuentes oficiales apropiadas."""
+
+            response = client.chat.completions.create(
+                 model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=600,
+                temperature=0.7
+            )
+            
+            ai_response = response.choices[0].message.content.strip()
+            logging.info("Respuesta de OpenAI generada exitosamente")
+            return ai_response
+            
+        except Exception as e:
+            logging.error(f"Error consultando OpenAI: {str(e)}")
+            return f"Lo siento, no pude procesar tu consulta en este momento. Por favor, intenta más tarde o consulta directamente con las oficinas del SENA."
+
+    def query_openai_with_context_full(self, query_text: str, context: str = "") -> str:
         """Consulta OpenAI con contexto mejorado."""
         try:
             logging.info("Iniciando consulta a OpenAI")

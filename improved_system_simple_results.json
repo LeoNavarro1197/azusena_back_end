@@ -1,0 +1,63 @@
+{
+  "test_summary": {
+    "timestamp": "2025-10-14T15:38:22.138854",
+    "total_tests": 5,
+    "successful_tests": 5
+  },
+  "test_results": [
+    {
+      "test_id": 1,
+      "query": "¿Qué dice el artículo 186 sobre calidad?",
+      "description": "Consulta específica sobre artículo existente",
+      "expected": "Debe encontrar el artículo 186 y validar su existencia",
+      "response": "**Artículo 186**\n\n**Fuente:** LEY 100 DE 1993\n\n**Tema:** Evaluación de calidad de IPS\n\n**Subtema:** Información y mejoramiento\n\n**Contenido:**\nDel Sistema de Acreditación. El Gobierno Nacional propiciará la conformación de un sistema de acreditación de las Instituciones Prestadoras de Servicios de Salud, para brindar información a los usuarios sobre su calidad y promover su mejoramiento.\n\n**Resumen:** Se implementa un sistema de acreditación para garantizar transparencia y calidad de las IPS.",
+      "similarity": 1.0,
+      "used_kb": true,
+      "timestamp": "2025-10-14T15:38:12.071607"
+    },
+    {
+      "test_id": 2,
+      "query": "¿Qué dicen los artículos 186 y 227 sobre calidad en la Ley 100?",
+      "description": "Consulta sobre múltiples artículos (uno existe, otro no)",
+      "expected": "Debe validar artículos y generar respuesta conservadora si es necesario",
+      "response": "El artículo 227 de la Ley 100 de 1993 se refiere a la garantía de calidad en los servicios de salud, estableciendo normas para asegurar la calidad de la atención médica, incluyendo la realización de auditorías médicas y la transparencia en la información. Por otro lado, el artículo 186 de la misma ley aborda la implementación de un sistema de acreditación para garantizar la transparencia y calidad de las Instituciones Prestadoras de Servicios de Salud (IPS), con el objetivo de brindar información a los usuarios sobre su calidad y promover su mejoramiento.\n\nSi necesitas más detalles sobre cómo se aplican estas normas en la práctica o cómo se supervisan, por favor, proporciona más información específica para poder ayudarte de manera más precisa. ¿Hay algo más en lo que pueda asistirte?",
+      "similarity": 0.7156960010528565,
+      "used_kb": true,
+      "timestamp": "2025-10-14T15:38:15.344930"
+    },
+    {
+      "test_id": 3,
+      "query": "¿Cuáles son los artículos sobre calidad en salud?",
+      "description": "Consulta general sobre calidad",
+      "expected": "Debe mostrar artículos validados temáticamente",
+      "response": "Encontré información relacionada con varios temas. ¿Sobre cuál te gustaría saber más?\n\n1. **Plan de atención complementaria**\n   - 1 artículo(s) relacionado(s)\n   - Relevancia máxima: 74.0%\n   - Ejemplos: Artículos 165\n\n2. **Evaluación de calidad de IPS**\n   - 1 artículo(s) relacionado(s)\n   - Relevancia máxima: 71.4%\n   - Ejemplos: Artículos 186\n\n3. **Calidad y satisfacción**\n   - 1 artículo(s) relacionado(s)\n   - Relevancia máxima: 66.0%\n   - Ejemplos: Artículos 199\n\nPor favor, especifica sobre qué tema te gustaría obtener información detallada.",
+      "similarity": 0.7399479389190674,
+      "used_kb": true,
+      "timestamp": "2025-10-14T15:38:16.402316"
+    },
+    {
+      "test_id": 4,
+      "query": "Información sobre acreditación de IPS",
+      "description": "Consulta temática específica",
+      "expected": "Debe mantener coherencia temática",
+      "response": "La acreditación de las Instituciones Prestadoras de Servicios de Salud (IPS) en Colombia se rige por la Ley 100 de 1993. Esta ley establece la implementación de un sistema de acreditación para garantizar transparencia y calidad en las IPS. El objetivo principal de este sistema es brindar información a los usuarios sobre la calidad de los servicios de salud ofrecidos por las IPS y promover su mejoramiento continuo.\n\nAdemás, la Ley 100 de 1993 también enfatiza la importancia de que las IPS garanticen un adecuado sistema de información de sus servicios y atención a los usuarios. Esto incluye la implementación de una línea telefónica abierta con atención permanente las 24 horas, para que los usuarios puedan acceder a información y servicios de manera continua.\n\nSi necesitas más detalles específicos sobre el proceso de acreditación de IPS en Colombia o los requisitos que deben cumplir las instituciones, por favor, proporciona más información detallada para poder brindarte una respuesta más completa. ¿En qué más puedo ayudarte?",
+      "similarity": 0.7843972086906433,
+      "used_kb": true,
+      "timestamp": "2025-10-14T15:38:20.109305"
+    },
+    {
+      "test_id": 5,
+      "query": "¿Qué dice el artículo 999 de la Ley 100?",
+      "description": "Consulta sobre artículo inexistente",
+      "expected": "Debe detectar que el artículo no existe",
+      "response": "No se encontró el artículo 999 en la base de datos.",
+      "similarity": 0.0,
+      "used_kb": false,
+      "timestamp": "2025-10-14T15:38:21.138084"
+    }
+  ],
+  "analysis": {
+    "avg_similarity": 0.6480082297325135,
+    "kb_usage_rate": 0.8
+  }
+}
