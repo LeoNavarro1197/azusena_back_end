@@ -4,6 +4,7 @@ import traceback
 import openai
 import httpx
 import emoji
+import pandas as pd
 from openai import OpenAI
 from app.config import Config
 from app.models.vector_db import vector_db
@@ -52,7 +53,27 @@ class QueryRAGSystem:
             r'cu[aá]les\s+normas',
             r'dime\s+que\s+art[ií]culos',
             r'muestra\s+art[ií]culos',
-            r'busca\s+art[ií]culos'
+            r'busca\s+art[ií]culos',
+            # Nuevos patrones para consultas por número/rango
+            r'primeros?\s+\d+\s+art[ií]culos',
+            r'\d+\s+primeros?\s+art[ií]culos',
+            r'art[ií]culos?\s+del?\s+\d+\s+al?\s+\d+',
+            r'art[ií]culos?\s+\d+\s+al?\s+\d+',
+            r'muestra\s+los?\s+\d+\s+primeros?\s+art[ií]culos',
+            r'muestra\s+los?\s+primeros?\s+\d+\s+art[ií]culos',
+            r'dame\s+los?\s+\d+\s+primeros?\s+art[ií]culos',
+            r'dame\s+los?\s+primeros?\s+\d+\s+art[ií]culos',
+            r'los?\s+\d+\s+primeros?\s+art[ií]culos',
+            r'los?\s+primeros?\s+\d+\s+art[ií]culos',
+            # Patrones con números escritos en palabras
+            r'diez\s+primeros?\s+art[ií]culos',
+            r'cinco\s+primeros?\s+art[ií]culos',
+            r'veinte\s+primeros?\s+art[ií]culos',
+            r'muestres?\s+los?\s+diez\s+primeros?\s+art[ií]culos',
+            r'muestres?\s+los?\s+cinco\s+primeros?\s+art[ií]culos',
+            r'muestres?\s+los?\s+veinte\s+primeros?\s+art[ií]culos',
+            r'que\s+me\s+muestres?\s+los?\s+diez\s+primeros?\s+art[ií]culos',
+            r'que\s+me\s+muestres?\s+los?\s+cinco\s+primeros?\s+art[ií]culos'
         ]
         
         for pattern in article_list_patterns:
@@ -221,6 +242,265 @@ class QueryRAGSystem:
         
         return response_text
 
+    def _list_articles_response(self, query_text: str, top_results: list):
+        """Genera un listado de artículos coherente con la consulta, con resumen corto por artículo.
+        Aplica filtros por concepto (tokens/sinónimos) y valida por tema/subtema/categorías.
+        """
+        try:
+            import re
+            q = query_text.lower()
+            
+            # NUEVA LÓGICA: Detectar consultas por número específico (ej: "primeros 10 artículos")
+            number_patterns = [
+                r'primeros?\s+(\d+)\s+art[ií]culos',
+                r'(\d+)\s+primeros?\s+art[ií]culos',
+                r'muestra\s+los?\s+(\d+)\s+primeros?\s+art[ií]culos',
+                r'muestra\s+los?\s+primeros?\s+(\d+)\s+art[ií]culos',
+                r'dame\s+los?\s+(\d+)\s+primeros?\s+art[ií]culos',
+                r'dame\s+los?\s+primeros?\s+(\d+)\s+art[ií]culos',
+                r'los?\s+(\d+)\s+primeros?\s+art[ií]culos',
+                r'los?\s+primeros?\s+(\d+)\s+art[ií]culos'
+            ]
+            
+            # Patrones con números en palabras
+            word_number_patterns = {
+                r'diez\s+primeros?\s+art[ií]culos': 10,
+                r'cinco\s+primeros?\s+art[ií]culos': 5,
+                r'veinte\s+primeros?\s+art[ií]culos': 20,
+                r'muestres?\s+los?\s+diez\s+primeros?\s+art[ií]culos': 10,
+                r'muestres?\s+los?\s+cinco\s+primeros?\s+art[ií]culos': 5,
+                r'muestres?\s+los?\s+veinte\s+primeros?\s+art[ií]culos': 20,
+                r'que\s+me\s+muestres?\s+los?\s+diez\s+primeros?\s+art[ií]culos': 10,
+                r'que\s+me\s+muestres?\s+los?\s+cinco\s+primeros?\s+art[ií]culos': 5
+            }
+            
+            requested_count = None
+            
+            # Primero probar patrones con números
+            for pattern in number_patterns:
+                match = re.search(pattern, q)
+                if match:
+                    requested_count = int(match.group(1))
+                    logging.info(f"Detectada consulta por número específico: {requested_count} artículos")
+                    break
+            
+            # Si no encontró, probar patrones con palabras
+            if not requested_count:
+                for pattern, count in word_number_patterns.items():
+                    if re.search(pattern, q):
+                        requested_count = count
+                        logging.info(f"Detectada consulta por número en palabras: {requested_count} artículos")
+                        break
+            
+            # Si es consulta por número específico, usar lógica diferente
+            if requested_count:
+                return self._list_articles_by_number(requested_count, query_text)
+            
+            # Construir tokens/sinónimos a partir de la consulta (lógica original)
+            synonyms = []
+            if any(term in q for term in ["peticion", "petición", "petici", "pqrs", "pqr", "queja", "reclamo", "reclamación", "reclamaciones"]):
+                synonyms = [
+                    r"\bpetici\w*",
+                    r"\bderecho\s+de\s+petici\w*",
+                    r"\bquej\w*",
+                    r"\brecl\w*",
+                    r"\bpqrs\b",
+                    r"\bpqr\b"
+                ]
+            else:
+                # Extraer palabras clave simples (remover stopwords comunes en español)
+                stopwords = {
+                    "que", "cuales", "cuáles", "sobre", "de", "del", "la", "el", "los", "las", "en", "y", "un", "una", "para", "por", "a", "qué", "articulo", "artículo", "art", "ley", "100", "1993"
+                }
+                tokens = [t for t in re.findall(r"[a-záéíóúñ]{3,}", q) if t not in stopwords]
+                # Crear regex por token (usar raíz con \w*)
+                synonyms = [fr"\b{re.escape(t)}\w*" for t in tokens]
+
+            def matches_any(text: str) -> bool:
+                s = str(text).lower()
+                for rx in synonyms:
+                    if re.search(rx, s):
+                        return True
+                return False
+
+            # 1) Filtrar resultados semánticos por coincidencia de conceptos
+            selected = []
+            for res in (top_results or []):
+                data = res.get('data', {})
+                fields = [
+                    data.get('tema', ''),
+                    data.get('subtema', ''),
+                    data.get('categorias', ''),
+                    data.get('resumen_explicativo', ''),
+                    data.get('texto_del_articulo', ''),
+                ]
+                if any(matches_any(f) for f in fields):
+                    selected.append(res)
+
+            # 2) Fallback: escanear el DataFrame si hay pocos seleccionados
+            if len(selected) < 5 and hasattr(vector_db, 'df') and vector_db.df is not None:
+                import pandas as pd
+                df = vector_db.df
+                cols = ['tema', 'subtema', 'categorias', 'resumen_explicativo', 'texto_del_articulo']
+                mask = None
+                for rx in synonyms:
+                    part = None
+                    for c in cols:
+                        # str.contains puede fallar si columna no es string; convertir
+                        col_series = df[c].astype(str)
+                        m = col_series.str.contains(rx, case=False, na=False, regex=True)
+                        part = m if part is None else (part | m)
+                    mask = part if mask is None else (mask | part)
+                if mask is not None:
+                    fallback_df = df[mask].copy()
+                    # Limitar tamaño y construir estructura similar a top_results
+                    for _, row in fallback_df.head(20).iterrows():
+                        selected.append({
+                            'similarity': 0.5,
+                            'data': {
+                                'fuente': row.get('fuente', ''),
+                                'articulo': str(row.get('articulo', '')).strip(),
+                                'tema': row.get('tema', ''),
+                                'subtema': row.get('subtema', ''),
+                                'categorias': row.get('categorias', ''),
+                                'resumen_explicativo': row.get('resumen_explicativo', ''),
+                                'texto_del_articulo': row.get('texto_del_articulo', ''),
+                            }
+                        })
+
+            # 3) Unificar por número de artículo y ordenar
+            seen = set()
+            unified = []
+            for res in sorted(selected, key=lambda r: r.get('similarity', 0), reverse=True):
+                art = str(res.get('data', {}).get('articulo', '')).strip()
+                if not art or art in seen:
+                    continue
+                seen.add(art)
+                unified.append(res)
+                if len(unified) >= 10:  # limitar a 10 artículos
+                    break
+
+            if not unified:
+                return ("No encontré artículos específicos coherentes con tu consulta en la Ley 100 de 1993. Si puedes precisar el término o tema, buscaré de nuevo.", 0.0, False)
+
+            # 4) Generar respuesta con resumen corto
+            response_lines = []
+            response_lines.append("📋 Artículos relacionados encontrados (Ley 100 de 1993):")
+            for res in unified:
+                d = res['data']
+                art = d.get('articulo', 'N/A')
+                fuente = d.get('fuente', 'Ley 100 de 1993')
+                tema = d.get('tema', '')
+                subtema = d.get('subtema', '')
+                resumen = d.get('resumen_explicativo', '')
+                texto = d.get('texto_del_articulo', '')
+
+                # Elegir resumen corto
+                snippet = resumen if resumen and str(resumen).strip() not in ['', 'nan', 'None', 'null'] else texto
+                snippet = str(snippet or '').strip()
+                if len(snippet) > 220:
+                    snippet = snippet[:220] + "..."
+                if not snippet:
+                    snippet = "(Sin resumen disponible)"
+
+                line = f"• ARTÍCULO {art} — {fuente}"
+                meta = []
+                if tema and str(tema).strip():
+                    meta.append(tema)
+                if subtema and str(subtema).strip() not in ['', 'nan', 'None', 'null']:
+                    meta.append(subtema)
+                if meta:
+                    line += f" | {' — '.join(meta)}"
+                response_lines.append(line)
+                response_lines.append(f"  {snippet}")
+
+            response_text = "\n".join(response_lines)
+            max_sim = max((r.get('similarity', 0.0) for r in unified), default=0.0)
+            return response_text, max_sim, True
+
+        except Exception as e:
+            logging.error(f"Error generando listado de artículos: {e}")
+            return f"Ocurrió un error al generar el listado: {str(e)}", 0.0, False
+
+    def _list_articles_by_number(self, requested_count: int, query_text: str):
+        """Genera un listado de artículos específicos por número (ej: primeros 10 artículos)."""
+        try:
+            # Verificar acceso a la base de datos
+            if not hasattr(vector_db, 'df') or vector_db.df is None:
+                return "❌ La base de datos no está disponible en este momento.", 0.0, False
+            
+            # Filtrar solo artículos de Ley 100 de 1993 (tolerando espacios no estándar)
+            fuente_series = vector_db.df['fuente'].astype(str).str.replace('\u00A0', ' ', regex=False)
+            ley100_mask = fuente_series.str.contains(r'(?i)ley\s*100\s*de\s*1993', regex=True)
+            ley100_df = vector_db.df[ley100_mask]
+            
+            if ley100_df.empty:
+                return "❌ No se encontraron artículos de la Ley 100 de 1993 en la base de datos.", 0.0, False
+            
+            # Convertir números de artículos a enteros para ordenar correctamente
+            ley100_df = ley100_df.copy()
+            ley100_df['articulo_num'] = pd.to_numeric(ley100_df['articulo'], errors='coerce')
+            
+            # Filtrar artículos válidos y ordenar por número
+            valid_articles = ley100_df.dropna(subset=['articulo_num']).sort_values('articulo_num')
+            
+            # Limitar al número solicitado
+            selected_articles = valid_articles.head(requested_count)
+            
+            if selected_articles.empty:
+                return f"❌ No se encontraron artículos válidos para mostrar.", 0.0, False
+            
+            # Generar respuesta
+            response_lines = [
+                f"📋 **{len(selected_articles)} {'Primeros' if requested_count <= 20 else ''} Artículos de la Ley 100 de 1993:**\n"
+            ]
+            
+            # Preferir texto completo si el usuario lo solicita
+            query_lower = query_text.lower()
+            prefer_full_text = any(term in query_lower for term in ['texto', 'texto completo', 'con su texto', 'con el texto'])
+            
+            for _, row in selected_articles.iterrows():
+                art_num = int(row['articulo_num'])
+                tema = row.get('tema', '')
+                subtema = row.get('subtema', '')
+                resumen = row.get('resumen_explicativo', '')
+                texto = row.get('texto_del_articulo', '')
+                
+                # Elegir contenido según preferencia del usuario
+                if prefer_full_text and texto and str(texto).strip() not in ['', 'nan', 'None', 'null']:
+                    content = texto
+                else:
+                    content = resumen if resumen and str(resumen).strip() not in ['', 'nan', 'None', 'null'] else texto
+                content = str(content or '').strip()
+                
+                # Truncar si es muy largo
+                if len(content) > 300:
+                    content = content[:300] + "..."
+                if not content:
+                    content = "(Contenido no disponible)"
+                
+                # Formatear línea del artículo
+                line = f"• **ARTÍCULO {art_num}**"
+                if tema and str(tema).strip():
+                    line += f" — {tema}"
+                if subtema and str(subtema).strip() not in ['', 'nan', 'None', 'null']:
+                    line += f" ({subtema})"
+                
+                response_lines.append(line)
+                response_lines.append(f"  {content}\n")
+            
+            response_text = "\n".join(response_lines)
+            
+            # Calcular similitud promedio (para consistencia con el sistema)
+            similarity = 0.8  # Alta similitud ya que es una consulta específica exitosa
+            
+            logging.info(f"Generado listado de {len(selected_articles)} artículos por número específico")
+            return response_text, similarity, True
+            
+        except Exception as e:
+            logging.error(f"Error generando listado por número: {e}")
+            return f"❌ Error al generar el listado: {str(e)}", 0.0, False
+
     def query_rag(self, query_text: str) -> tuple:
         """Consulta el sistema RAG y devuelve la mejor respuesta disponible con información de similitud."""
         global conversation_history
@@ -242,28 +522,28 @@ class QueryRAGSystem:
 
             # NUEVA LÓGICA: Detectar si es una consulta de lista de artículos
             if self.is_article_list_query(query_text):
-                logging.info("Consulta de lista de artículos detectada - usando formato estándar")
-                # Proceder con la búsqueda estándar para mostrar lista de artículos
-                # No hacer nada especial, continuar con la lógica normal
+                logging.info("Consulta de listado detectada; generando lista de artículos")
+                top_results = vector_db.get_top_results(query_text, top_k=25)
+                return self._list_articles_response(query_text, top_results)
+
+            logging.info("Consulta específica detectada - generando respuesta con IA")
+            # Para consultas específicas, usar OpenAI con contexto de la base de datos
+            top_results = vector_db.get_top_results(query_text, top_k=5)
+            if top_results and top_results[0]['similarity'] >= 0.3:  # Umbral más bajo para contexto
+                # Crear contexto con la información relevante encontrada
+                context_info = self._prepare_context_from_results(top_results)
+                ai_response = self.query_openai_with_context(query_text, context_info)
+                
+                # NUEVA MEJORA: Validar y mejorar coherencia de la respuesta
+                improved_response = self._improve_response_coherence(query_text, ai_response)
+                
+                return improved_response, top_results[0]['similarity'], True
             else:
-                logging.info("Consulta específica detectada - generando respuesta con IA")
-                # Para consultas específicas, usar OpenAI con contexto de la base de datos
-                top_results = vector_db.get_top_results(query_text, top_k=5)
-                if top_results and top_results[0]['similarity'] >= 0.3:  # Umbral más bajo para contexto
-                    # Crear contexto con la información relevante encontrada
-                    context_info = self._prepare_context_from_results(top_results)
-                    ai_response = self.query_openai_with_context(query_text, context_info)
-                    
-                    # NUEVA MEJORA: Validar y mejorar coherencia de la respuesta
-                    improved_response = self._improve_response_coherence(query_text, ai_response)
-                    
-                    return improved_response, top_results[0]['similarity'], True
-                else:
-                    # Si no hay información relevante, usar OpenAI sin contexto específico
-                    logging.info("No se encontró información relevante, consultando OpenAI sin contexto específico")
-                    context = self.get_context_from_history()
-                    response = self.query_openai(query_text, context)
-                    return response, 0.0, False
+                # Si no hay información relevante, usar OpenAI sin contexto específico
+                logging.info("No se encontró información relevante, consultando OpenAI sin contexto específico")
+                context = self.get_context_from_history()
+                response = self.query_openai(query_text, context)
+                return response, 0.0, False
 
             # Buscar preguntas similares en FAISS
             response, similarity_score = vector_db.find_similar_question(query_text)
@@ -381,7 +661,7 @@ class QueryRAGSystem:
                 response += f"**Subtema:** {article['subtema']}\n"
             if article['categorias'] and str(article['categorias']).strip() not in ['', 'nan', 'None']:
                 response += f"**Categorías:** {article['categorias']}\n"
-            response += f"\n**Contenido:**\n{article['texto_del_articulo']}\n\n"
+            response += f"\n**Contenido:** {article['texto_del_articulo']}\n\n"
             
             if article['resumen_explicativo'] and str(article['resumen_explicativo']).strip() not in ['', 'nan', 'None']:
                 response += f"**Resumen:** {article['resumen_explicativo']}"

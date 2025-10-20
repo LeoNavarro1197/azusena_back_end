@@ -515,5 +515,6 @@ class VectorDB:
         logging.info(f"Resultados para consulta '{query_text}': {len(valid_results)} encontrados")
         return valid_results
 
+
 # Crear instancia de la base de datos
 vector_db = VectorDB()
