@@ -81,6 +81,16 @@ class QueryRAGSystem:
                 return True
         return False
 
+    def is_opinion_request(self, query_text: str) -> bool:
+        """Detecta si el usuario pide explicación en 'tus palabras' u opinión."""
+        q = query_text.lower()
+        triggers = [
+            "en tus palabras", "con tus palabras", "tu opinión", "qué opinas",
+            "opina", "explicame con tus palabras", "explícame con tus palabras",
+            "dime tu opinión", "en tu criterio", "desde tu perspectiva"
+        ]
+        return any(t in q for t in triggers)
+
     def _generate_direct_response(self, results, query_text):
         """Genera una respuesta directa basada en los resultados más relevantes."""
         try:
@@ -509,6 +519,7 @@ class QueryRAGSystem:
             # Limpiar y normalizar la consulta
             query_text = self.clean_text(query_text)
             logging.info(f"Consulta normalizada: {query_text}")
+            opinion_mode = self.is_opinion_request(query_text)
 
             # NUEVA LÓGICA: Detectar si se solicita un artículo específico
             import re
@@ -518,14 +529,38 @@ class QueryRAGSystem:
             if match:
                 article_number = match.group(1)
                 logging.info(f"Solicitud de artículo específico detectada: {article_number}")
-                return vector_db.get_article_details(article_number)
-
+                resp = vector_db.get_article_details(article_number)
+                # Desempaquetar si la base devuelve tupla (texto, similitud, usado_kb)
+                if isinstance(resp, tuple) and len(resp) == 3:
+                    resp_text, sim, used_kb = resp
+                else:
+                    resp_text, sim, used_kb = resp, 0.95, True
+                # Si el usuario pide opinión/en sus palabras, generar explicación interpretativa
+                if opinion_mode and isinstance(resp_text, str):
+                    import re as _re
+                    m = _re.search(r"\*\*Contenido:\*\*\s*(.+?)(?:\n\n|\Z|\*\*Resumen:\*\*)", resp_text, flags=_re.S)
+                    content_block = m.group(1).strip() if m else resp_text
+                    context_info = f"Texto del artículo para explicar en tus palabras:\n{content_block}"
+                    resp_text = self.query_openai_with_context(query_text, context_info)
+                # Actualizar historial y devolver
+                conversation_history.append({"role": "user", "content": query_text})
+                conversation_history.append({"role": "assistant", "content": resp_text})
+                if len(conversation_history) > 20:
+                    conversation_history = conversation_history[-20:]
+                return resp_text, sim, used_kb
+            
             # NUEVA LÓGICA: Detectar si es una consulta de lista de artículos
             if self.is_article_list_query(query_text):
                 logging.info("Consulta de listado detectada; generando lista de artículos")
                 top_results = vector_db.get_top_results(query_text, top_k=25)
-                return self._list_articles_response(query_text, top_results)
-
+                resp_tuple = self._list_articles_response(query_text, top_results)
+                # Actualizar historial
+                conversation_history.append({"role": "user", "content": query_text})
+                conversation_history.append({"role": "assistant", "content": resp_tuple[0]})
+                if len(conversation_history) > 20:
+                    conversation_history = conversation_history[-20:]
+                return resp_tuple
+            
             logging.info("Consulta específica detectada - generando respuesta con IA")
             # Para consultas específicas, usar OpenAI con contexto de la base de datos
             top_results = vector_db.get_top_results(query_text, top_k=5)
@@ -537,12 +572,23 @@ class QueryRAGSystem:
                 # NUEVA MEJORA: Validar y mejorar coherencia de la respuesta
                 improved_response = self._improve_response_coherence(query_text, ai_response)
                 
+                # Actualizar historial
+                conversation_history.append({"role": "user", "content": query_text})
+                conversation_history.append({"role": "assistant", "content": improved_response})
+                if len(conversation_history) > 20:
+                    conversation_history = conversation_history[-20:]
+                
                 return improved_response, top_results[0]['similarity'], True
             else:
                 # Si no hay información relevante, usar OpenAI sin contexto específico
                 logging.info("No se encontró información relevante, consultando OpenAI sin contexto específico")
                 context = self.get_context_from_history()
                 response = self.query_openai(query_text, context)
+                # Actualizar historial
+                conversation_history.append({"role": "user", "content": query_text})
+                conversation_history.append({"role": "assistant", "content": response})
+                if len(conversation_history) > 20:
+                    conversation_history = conversation_history[-20:]
                 return response, 0.0, False
 
             # Buscar preguntas similares en FAISS
@@ -728,11 +774,12 @@ class QueryRAGSystem:
             system_prompt = """Eres AzuSENA, asistente virtual del SENA de Colombia.
 
 INSTRUCCIONES CRÍTICAS:
-1. Responde de manera natural y conversacional, como si fueras un experto humano
-2. NO menciones que eres una IA o que estás consultando una base de datos
-3. NO uses formatos de lista con viñetas o estructuras rígidas
-4. Redacta respuestas fluidas y naturales basadas en la información proporcionada
-5. Si la información no es suficiente para responder completamente, di que necesitas más detalles específicos
+1. Responde de manera natural y conversacional, como si fueras un experto humano.
+2. No menciones que eres una IA ni detalles técnicos del sistema.
+3. Evita formatos rígidos; prioriza texto fluido y claro.
+4. Usa la información proporcionada como base principal; no inventes.
+5. Si la información no es suficiente, pide aclaraciones específicas.
+6. Si el usuario solicita "en tus palabras" o "tu opinión", ofrece una explicación interpretativa y neutral, sin juicios de valor.
 
 FORMATO DE RESPUESTA:
 - Respuesta directa y natural
@@ -747,11 +794,18 @@ PROHIBIDO:
 - Decir "según mi base de datos"
 - Usar emojis excesivos"""
 
+            history_ctx = self.get_context_from_history()
             user_prompt = f"""Pregunta del usuario: {query_text}
 
 {context_info}
 
-Responde de manera natural y conversacional basándote en la información proporcionada. Si la información es relevante, úsala para dar una respuesta completa. Si no es suficiente, explica qué información adicional necesitarías."""
+"""
+            if history_ctx:
+                user_prompt += f"Contexto reciente:\n{history_ctx}\n\n"
+            if self.is_opinion_request(query_text):
+                user_prompt += "Explica en tus palabras de forma neutral y clara, sin inventar información."
+            else:
+                user_prompt += "Responde de manera natural basándote en la información proporcionada. Si no es suficiente, explica qué información adicional necesitarías."
 
             # Configurar cliente OpenAI
             client = OpenAI(api_key=Config.OPENAI_API_KEY)
@@ -761,7 +815,7 @@ Responde de manera natural y conversacional basándote en la información propor
                 return "Lo siento, el servicio de consulta no está disponible en este momento."
 
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=Config.OPENAI_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -794,11 +848,12 @@ Responde de manera natural y conversacional basándote en la información propor
             system_prompt = """Eres AzuSENA, asistente virtual del SENA de Colombia.
 
 INSTRUCCIONES CRÍTICAS:
-1. Responde de manera natural y conversacional
-2. Proporciona información general sobre procedimientos administrativos colombianos
-3. Si no tienes información específica, sé honesto al respecto
-4. Sugiere consultar fuentes oficiales cuando sea apropiado
-5. Mantén un tono profesional pero amigable
+1. Responde de manera natural y conversacional, como si fueras un experto humano.
+2. No menciones que eres una IA ni detalles técnicos del sistema.
+3. Ofrece información general sobre procedimientos administrativos colombianos y temas relacionados.
+4. Si no tienes información específica, sé honesto y sugiere fuentes oficiales.
+5. Mantén un tono profesional y amigable.
+6. Si el usuario pide "en tus palabras" o "tu opinión", explica de forma interpretativa y neutral, sin juicios de valor.
 
 FORMATO DE RESPUESTA:
 - Respuesta directa y natural
@@ -811,14 +866,21 @@ PROHIBIDO:
 - Dar información incorrecta
 - Usar formatos excesivamente estructurados"""
 
+            history_ctx = self.get_context_from_history()
             user_prompt = f"""Pregunta del usuario: {query_text}
 
 {context if context else ""}
 
-Responde de manera natural proporcionando la información general que tengas disponible. Si no tienes información específica, sugiere fuentes oficiales apropiadas."""
+"""
+            if history_ctx:
+                user_prompt += f"Contexto reciente:\n{history_ctx}\n\n"
+            if self.is_opinion_request(query_text):
+                user_prompt += "Explica en tus palabras de forma neutral y clara, evitando juicios de valor."
+            else:
+                user_prompt += "Responde de manera natural con la información general disponible. Si no tienes detalles específicos, sugiere fuentes oficiales apropiadas."
 
             response = client.chat.completions.create(
-                 model="gpt-3.5-turbo",
+                 model=Config.OPENAI_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -850,7 +912,7 @@ Directrices de Comportamiento:
 
 2. Fuentes de Información: 
    - PRIORIDAD ABSOLUTA: Utiliza ÚNICAMENTE la información de tu base de datos RAG cuando se trate de artículos específicos, leyes, decretos o normativas.
-   - PROHIBIDO TERMINANTEMENTE: NO inventes, no crees, no generes artículos, números de artículos, o contenido específico de leyes que no esté en tu base de datos.
+   - PROHIBIDO TERMINANTEMENTE: NO inventes, no crees, no generes artículos, números de artículos, contenido de leyes, decretos o normativas que no estén en tu base de datos RAG.
    
    **REGLAS CRÍTICAS PARA MOSTRAR TEXTO COMPLETO:**
    - Si la función get_article_details() devuelve un artículo CON contenido en la sección "**Contenido:**", entonces TIENES el texto completo y DEBES mostrarlo completamente.

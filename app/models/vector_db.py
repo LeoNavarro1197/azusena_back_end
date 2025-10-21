@@ -182,7 +182,7 @@ class VectorDB:
         query_lower = query_text.lower()
         enhanced_terms = []
         
-        # Mapeo de conceptos clave para mejorar la recuperación
+        # Mapeo de conceptos clave ampliado para mejorar la recuperación transversal de temas
         concept_mappings = {
             'objeto': ['finalidad', 'propósito', 'objetivo', 'meta'],
             'garantizar': ['asegurar', 'proteger', 'salvaguardar'],
@@ -191,17 +191,37 @@ class VectorDB:
             'contingencias': ['riesgos', 'eventualidades', 'situaciones'],
             'calidad de vida': ['bienestar', 'dignidad humana'],
             'principios': ['fundamentos', 'bases', 'criterios'],
-            'cobertura': ['alcance', 'extensión', 'ámbito']
+            'cobertura': ['alcance', 'extensión', 'ámbito'],
+            # Nuevos tópicos transversales
+            'calidad': ['estándares', 'acreditación', 'mejora continua', 'seguridad del paciente'],
+            'transparencia': ['rendición de cuentas', 'publicidad', 'acceso a la información'],
+            'auditoría': ['auditorías', 'control', 'verificación', 'inspección'],
+            'eps': ['entidades promotoras de salud', 'aseguradoras', 'administradoras'],
+            'financiamiento': ['financiación', 'recursos', 'presupuesto', 'aporte'],
+            'tecnología': ['tecnología biomédica', 'equipos médicos', 'innovación'],
+            'principios del sistema': ['fundamentos del sistema', 'bases del sistema']
         }
         
-        # Agregar términos relacionados si se encuentran conceptos clave
+        # Agregar términos relacionados si se encuentran conceptos clave (exact match)
         for concept, related_terms in concept_mappings.items():
             if concept in query_lower:
                 enhanced_terms.extend(related_terms)
         
+        # Extraer tokens significativos (≥4 letras) y agregar variaciones
+        import re
+        tokens = [t for t in re.findall(r"[a-záéíóúñ]{4,}", query_lower)]
+        for t in tokens:
+            # Variaciones comunes para mejorar recall
+            if t.endswith('ción'):
+                enhanced_terms.append(t.replace('ción', 'ciones'))
+            if t.endswith('dad'):
+                enhanced_terms.append(t.replace('dad', 'idades'))
+            # Añadir token tal cual para reforzar embedding
+            enhanced_terms.append(t)
+        
         # Combinar consulta original con términos enriquecidos
         if enhanced_terms:
-            return f"{query_text} {' '.join(enhanced_terms)}"
+            return f"{query_text} {' '.join(sorted(set(enhanced_terms)))}"
         return query_text
     
     def _calculate_weighted_similarity(self, query_text, original_similarity, article_data):
@@ -224,10 +244,27 @@ class VectorDB:
             'derechos': 0.1 if 'derecho' in query_lower and 'derecho' in categories else 0,
             'protección': 0.1 if 'protec' in query_lower and 'protec' in article_text else 0,
             'contingencias': 0.1 if 'contingencia' in query_lower and 'contingencia' in article_text else 0,
-            'principios': 0.1 if 'principio' in query_lower and 'principio' in categories else 0
+            'principios': 0.1 if 'principio' in query_lower and 'principio' in categories else 0,
+            # Nuevos tópicos transversales
+            'calidad': 0.12 if 'calidad' in query_lower and ('calidad' in categories or 'calidad' in theme or 'acreditación' in categories) else 0,
+            'transparencia': 0.12 if 'transparenc' in query_lower and ('transparenc' in categories or 'rendición' in categories) else 0,
+            'auditoría': 0.12 if ('auditor' in query_lower) and ('auditor' in categories or 'auditor' in article_text) else 0,
+            'eps': 0.08 if 'eps' in query_lower and ('eps' in categories or 'entidades promotoras' in categories or 'aseguradoras' in categories) else 0,
+            'financiamiento': 0.1 if ('financia' in query_lower or 'recursos' in query_lower or 'presupuesto' in query_lower) and ('financia' in categories or 'recursos' in article_text) else 0,
+            'tecnología': 0.1 if ('tecnolog' in query_lower) and ('tecnolog' in categories or 'bioméd' in categories or 'equipos' in article_text) else 0,
         }
-        
         weight_boost = sum(concept_boosts.values())
+        
+        # Boost por coincidencia exacta de tokens en tema/subtema/categorías
+        import re
+        token_list = [t for t in re.findall(r"[a-záéíóúñ]{4,}", query_lower)]
+        for t in token_list:
+            if t in theme:
+                weight_boost += 0.02
+            if t in subtheme:
+                weight_boost += 0.03
+            if t in categories:
+                weight_boost += 0.03
         
         # Boost por coincidencia exacta de tema/subtema
         if any(word in theme for word in query_lower.split()):
@@ -235,9 +272,8 @@ class VectorDB:
         if any(word in subtheme for word in query_lower.split()):
             weight_boost += 0.1
         
-        # Aplicar ponderación (máximo boost de 0.3)
-        final_similarity = min(original_similarity + min(weight_boost, 0.3), 1.0)
-        
+        # Aplicar ponderación (máximo boost de 0.35)
+        final_similarity = min(original_similarity + min(weight_boost, 0.35), 1.0)
         return final_similarity
     
     def _generate_contextualized_response(self, results, query_text):
@@ -466,7 +502,21 @@ class VectorDB:
             if article.get('texto_del_articulo') and str(article.get('texto_del_articulo')).strip() not in ['', 'nan', 'None', 'null']:
                 response_parts.append(f"**Contenido:**\n{article.get('texto_del_articulo')}")
             else:
-                response_parts.append("❌ **Texto Completo No Disponible**")
+                tema = article.get('tema') or ''
+                subtema = article.get('subtema') or ''
+                fuente = article.get('fuente') or ''
+                resumen = article.get('resumen_explicativo') or ''
+                parts = []
+                parts.append(f"El artículo {article_number} ({fuente}) no tiene disponible su texto completo en la base de datos actual.")
+                if resumen:
+                    parts.append(f"En términos generales, trata sobre {resumen}.")
+                elif tema:
+                    if subtema:
+                        parts.append(f"Su tema es {tema} y aborda el subtema {subtema}.")
+                    else:
+                        parts.append(f"Su tema principal es {tema}.")
+                parts.append("Para consultar el texto exacto y detalles oficiales, revisa el sitio del Ministerio de Salud o la plataforma de legislación colombiana.")
+                return " ".join(parts), 1.0, True
             
             if article.get('resumen_explicativo') and str(article.get('resumen_explicativo')).strip() not in ['', 'nan', 'None', 'null']:
                 response_parts.append(f"**Resumen:** {article.get('resumen_explicativo')}")

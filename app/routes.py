@@ -69,6 +69,14 @@ def query():
         print(f"[PRINT DEBUG] Desempaquetado - response: {response_text[:50]}..., similarity: {similarity_score}, used_kb: {used_kb}")
         logging.info(f"Desempaquetado - response_text: {type(response_text)}, similarity_score: {similarity_score}, used_kb: {used_kb}")
         
+        # Sanitizar posibles tokens 'undefined' al final
+        try:
+            import re
+            if isinstance(response_text, str):
+                response_text = re.sub(r"\s*undefined\s*$", "", response_text)
+        except Exception as _san_err:
+            logging.debug(f"No se pudo sanitizar 'undefined': {_san_err}")
+        
         # Preparar y enviar la respuesta
         response = {
             "response": response_text,
