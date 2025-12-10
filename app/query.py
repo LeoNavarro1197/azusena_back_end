@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 
 conversation_history = []
-
+# AGOSTO
 class QueryRAGSystem:
     def __init__(self):
         logging.info("Inicializando QueryRAGSystem")
@@ -38,7 +38,7 @@ class QueryRAGSystem:
         # Normalizar espacios
         texto = ' '.join(texto.split())
         return texto
-
+# SEPTIEMBRE
     def is_article_list_query(self, query_text):
         """Detecta si la consulta solicita una lista de artículos."""
         query_lower = query_text.lower()
@@ -80,7 +80,7 @@ class QueryRAGSystem:
             if re.search(pattern, query_lower):
                 return True
         return False
-
+# OCTUBRE
     def is_opinion_request(self, query_text: str) -> bool:
         """Detecta si el usuario pide explicación en 'tus palabras' u opinión."""
         q = query_text.lower()
@@ -1035,6 +1035,7 @@ Según mi base de datos especializada, encontré información sobre '[tema]' en 
    • Usa párrafos normales y listas con guiones (-)
    • Termina siempre con una pregunta amigable para continuar la conversación
 
+#NOVIEMBRE
 Restricciones CRÍTICAS:
 • PROHIBICIÓN ABSOLUTA: NO inventes, no crees, no generes información sobre artículos específicos, números de artículos, contenido de leyes, decretos o normativas que no estén en tu base de datos RAG.
 • TRANSPARENCIA OBLIGATORIA: Si no encuentras información específica en tu base de datos, admite claramente esta limitación con frases como: "No encontré información específica sobre [tema] en mi base de datos especializada" o "No dispongo de artículos verificados sobre este tema específico."
