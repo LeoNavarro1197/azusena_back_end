@@ -207,9 +207,9 @@ class VectorDB:
             if concept in query_lower:
                 enhanced_terms.extend(related_terms)
         
-        # Extraer tokens significativos (≥4 letras) y agregar variaciones
+        # Extraer tokens significativos (≥2 letras/números) y agregar variaciones
         import re
-        tokens = [t for t in re.findall(r"[a-záéíóúñ]{4,}", query_lower)]
+        tokens = [t for t in re.findall(r"[a-záéíóúñ0-9]{2,}", query_lower)]
         for t in tokens:
             # Variaciones comunes para mejorar recall
             if t.endswith('ción'):
@@ -257,7 +257,7 @@ class VectorDB:
         
         # Boost por coincidencia exacta de tokens en tema/subtema/categorías
         import re
-        token_list = [t for t in re.findall(r"[a-záéíóúñ]{4,}", query_lower)]
+        token_list = [t for t in re.findall(r"[a-záéíóúñ0-9]{2,}", query_lower)]
         for t in token_list:
             if t in theme:
                 weight_boost += 0.02
@@ -312,7 +312,7 @@ class VectorDB:
         quality_terms = ['calidad', 'estándares', 'acreditación', 'certificación']
         article_terms = ['artículo', 'art.', 'articulo']
         health_terms = ['salud', 'médico', 'atención', 'servicios']
-        law_terms = ['ley 100', 'ley cien', 'normativa']
+        law_terms = ['ley', 'norma', 'normativa', 'decreto', 'resolución', 'código', 'estatuto']
         
         # Verificar si la consulta es sobre calidad
         is_quality_query = any(term in query_lower for term in quality_terms)
@@ -470,18 +470,44 @@ class VectorDB:
         logging.info(f"Validación de artículos: {len(validated_results)}/{len(results)} artículos válidos")
         return validated_results
 
-    def get_article_details(self, article_number: str) -> tuple:
-        """Obtiene los detalles de un artículo específico por su número."""
+    def get_article_details(self, article_number: str, source: str = None) -> tuple:
+        """Obtiene los detalles de un artículo específico por su número y opcionalmente fuente."""
         try:
             if self.df is None:
                 return "La base de datos no está disponible.", 0.0, False
             
             # Buscar el artículo específico
-            article_filter = self.df['articulo'].astype(str) == str(article_number)
-            matching_articles = self.df[article_filter]
+            # Primero convertir a string para asegurar coincidencia
+            # Usar normalización básica para robustez
+            df_articles = self.df.copy()
+            df_articles['articulo_str'] = df_articles['articulo'].astype(str).str.strip()
+            
+            article_filter = df_articles['articulo_str'] == str(article_number).strip()
+            
+            # Si se especifica fuente, filtrar también por ella
+            if source:
+                # Normalizar fuente para comparación
+                import unicodedata
+                def normalize(text):
+                    return unicodedata.normalize('NFKD', str(text)).encode('ASCII', 'ignore').decode('utf-8').lower()
+                
+                source_norm = normalize(source)
+                
+                # Crear columna normalizada temporal para filtrado
+                df_articles['fuente_norm'] = df_articles['fuente'].apply(normalize)
+                
+                # Filtrar donde la fuente sea exactamente la detectada
+                # (Asumimos que source viene del mismo set de fuentes del DF)
+                source_filter = df_articles['fuente_norm'] == source_norm
+                article_filter = article_filter & source_filter
+            
+            matching_articles = df_articles[article_filter]
             
             if matching_articles.empty:
-                return f"No se encontró el artículo {article_number} en la base de datos.", 0.0, False
+                msg = f"No se encontró el artículo {article_number}"
+                if source:
+                    msg += f" de la ley {source}"
+                return msg + " en la base de datos.", 0.0, False
             
             # Tomar el primer resultado
             article = matching_articles.iloc[0]

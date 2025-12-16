@@ -10,6 +10,7 @@ Este repositorio contiene el backend para el proyecto **AzuSena**, un asistente 
   - [Instalación](#instalación)
   - [Iniciador Local](#iniciador-local)
   - [Estructura del Proyecto](#estructura-del-proyecto)
+  - [Esquema de Datos](#esquema-de-datos)
   - [Funcionamiento del Sistema](#funcionamiento-del-sistema)
   - [Pruebas](#pruebas)
   - [Contribuciones](#contribuciones)
@@ -94,12 +95,19 @@ AzuSena-Backend/
 └── README.md
 ```
 
+## Esquema de Datos
+
+- Columnas requeridas del Excel: `fuente`, `articulo`, `tema`, `subtema`, `texto_del_articulo`, `categorias`, `resumen_explicativo`.
+- Campo derivado `texto_completo` para embeddings que concatena texto, resumen, categorías, tema y subtema.
+- Índice FAISS: embeddings normalizados (`L2`) y `IndexFlatIP` para similitud.
+- Construcción del índice: se recrea al iniciar para reflejar la data actual.
+
 ## Funcionamiento del Sistema
 
 1. **Frontend React** captura la consulta del usuario.
 2. **Flask Backend** recibe la petición HTTP o WebSocket y gestiona el contexto conversacional.
 3. **FAISS** realiza una búsqueda vectorial usando embeddings de Sentence Transformers para recuperar conocimiento relacionado.
-4. Si la similitud es suficiente (≥0.65), devuelve la respuesta de la base de conocimientos.
+4. Si la similitud es suficiente (≥0.55), devuelve la respuesta de la base de conocimientos.
 5. Si no hay información suficiente, **OpenAI GPT-4o-mini** genera una respuesta contextualizada.
 6. El resultado es enviado de nuevo al frontend via JSON y WebSocket.
 
@@ -137,9 +145,10 @@ AzuSena-Backend/
 ## Configuración del Sistema RAG
 
 - **Modelo de Embeddings**: `paraphrase-multilingual-mpnet-base-v2`
-- **Umbral de Similitud**: 0.65
+- **Umbral de Similitud**: 0.55
 - **Modelo OpenAI**: GPT-4o-mini-2024-07-18
-- **Base de Conocimientos**: Excel con estructura detallada (fuente, artículo, tema, subtema, etc.)
+- **Base de Conocimientos**: Excel con estructura detallada (fuente, artículo, tema, subtema, texto_del_articulo, categorias, resumen_explicativo)
+- **Índice FAISS**: embeddings normalizados L2 y `IndexFlatIP`; se recrea al iniciar.
 
 ## Contribuciones
 

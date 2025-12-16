@@ -177,9 +177,9 @@ class QueryRAGSystem:
             
             # Crear una respuesta más conservadora
             if validated_articles:
-                response_text = f"Encontré información sobre calidad en la Ley 100 de 1993. Los artículos verificados que tratan este tema incluyen: {', '.join(validated_articles)}. Para obtener información específica sobre algún artículo, por favor pregúntame directamente por el número del artículo."
+                response_text = f"Encontré información en la base de datos normativa. Los artículos verificados que tratan este tema incluyen: {', '.join(validated_articles)}. Para obtener información específica sobre algún artículo, por favor pregúntame directamente por el número del artículo."
             else:
-                response_text = "Encontré información relacionada con calidad en la Ley 100 de 1993, pero para brindarte información precisa sobre artículos específicos, por favor pregúntame por el número exacto del artículo que te interesa."
+                response_text = "Encontré información relacionada en la base de datos normativa, pero para brindarte información precisa sobre artículos específicos, por favor pregúntame por el número exacto del artículo que te interesa."
             
             return response_text, False
         
@@ -194,7 +194,7 @@ class QueryRAGSystem:
         key_terms = {
             'calidad': ['calidad', 'calidad de servicio', 'calidad de atención', 'estándares'],
             'artículo': ['artículo', 'art.', 'artículos'],
-            'ley 100': ['ley 100', 'ley 100 de 1993', 'ley cien'],
+            'ley': ['ley', 'norma', 'decreto', 'resolución', 'código', 'estatuto'],
             'salud': ['salud', 'servicios de salud', 'atención médica', 'sistema de salud'],
             'acreditación': ['acreditación', 'acreditar', 'certificación'],
             'auditoría': ['auditoría', 'auditorías', 'control', 'evaluación']
@@ -320,9 +320,9 @@ class QueryRAGSystem:
             else:
                 # Extraer palabras clave simples (remover stopwords comunes en español)
                 stopwords = {
-                    "que", "cuales", "cuáles", "sobre", "de", "del", "la", "el", "los", "las", "en", "y", "un", "una", "para", "por", "a", "qué", "articulo", "artículo", "art", "ley", "100", "1993"
+                    "que", "cuales", "cuáles", "sobre", "de", "del", "la", "el", "los", "las", "en", "y", "un", "una", "para", "por", "a", "qué", "articulo", "artículo", "art", "ley"
                 }
-                tokens = [t for t in re.findall(r"[a-záéíóúñ]{3,}", q) if t not in stopwords]
+                tokens = [t for t in re.findall(r"[a-záéíóúñ0-9]{2,}", q) if t not in stopwords]
                 # Crear regex por token (usar raíz con \w*)
                 synonyms = [fr"\b{re.escape(t)}\w*" for t in tokens]
 
@@ -391,15 +391,15 @@ class QueryRAGSystem:
                     break
 
             if not unified:
-                return ("No encontré artículos específicos coherentes con tu consulta en la Ley 100 de 1993. Si puedes precisar el término o tema, buscaré de nuevo.", 0.0, False)
+                return ("No encontré artículos específicos coherentes con tu consulta en la base de datos. Si puedes precisar el término o tema, buscaré de nuevo.", 0.0, False)
 
             # 4) Generar respuesta con resumen corto
             response_lines = []
-            response_lines.append("📋 Artículos relacionados encontrados (Ley 100 de 1993):")
+            response_lines.append("📋 Artículos relacionados encontrados:")
             for res in unified:
                 d = res['data']
                 art = d.get('articulo', 'N/A')
-                fuente = d.get('fuente', 'Ley 100 de 1993')
+                fuente = d.get('fuente', 'Fuente desconocida')
                 tema = d.get('tema', '')
                 subtema = d.get('subtema', '')
                 resumen = d.get('resumen_explicativo', '')
@@ -439,21 +439,84 @@ class QueryRAGSystem:
             if not hasattr(vector_db, 'df') or vector_db.df is None:
                 return "❌ La base de datos no está disponible en este momento.", 0.0, False
             
-            # Filtrar solo artículos de Ley 100 de 1993 (tolerando espacios no estándar)
-            fuente_series = vector_db.df['fuente'].astype(str).str.replace('\u00A0', ' ', regex=False)
-            ley100_mask = fuente_series.str.contains(r'(?i)ley\s*100\s*de\s*1993', regex=True)
-            ley100_df = vector_db.df[ley100_mask]
+            articles_df = vector_db.df.copy()
             
-            if ley100_df.empty:
-                return "❌ No se encontraron artículos de la Ley 100 de 1993 en la base de datos.", 0.0, False
+            if articles_df.empty:
+                return "❌ No se encontraron artículos en la base de datos.", 0.0, False
             
+            # --- NUEVA LÓGICA DE FILTRADO POR FUENTE ---
+            # Identificar si la consulta menciona una ley específica
+            query_lower = query_text.lower()
+            
+            # Obtener todas las fuentes únicas
+            all_sources = articles_df['fuente'].unique()
+            matched_source = None
+            
+            # Normalizar para comparación
+            import unicodedata
+            def normalize(text):
+                return unicodedata.normalize('NFKD', str(text)).encode('ASCII', 'ignore').decode('utf-8').lower()
+            
+            q_norm = normalize(query_lower)
+            
+            # ESTRATEGIA 1: Buscar patrones numéricos específicos (ej: "ley 100", "decreto 123")
+            # Esto ayuda cuando el usuario dice "ley 100" pero la fuente es "ley 100 de 1993"
+            import re
+            law_pattern = re.search(r'(ley|decreto|resoluci[oó]n|c[oó]digo|estatuto)\s*(\d+)', q_norm)
+            
+            if law_pattern:
+                law_type = law_pattern.group(1)
+                law_num = law_pattern.group(2)
+                # Crear patrón de búsqueda estricto (word boundary) para evitar que "ley 100" coincida con "ley 1000"
+                # Normalizamos espacios en el regex
+                search_key = fr"{law_type}\s+{law_num}\b"
+                
+                logging.info(f"Buscando patrón normativo: {search_key}")
+                
+                for source in all_sources:
+                    s_norm = normalize(source)
+                    # Usar regex para buscar el patrón en la fuente normalizada
+                    if re.search(search_key, s_norm):
+                        matched_source = source
+                        logging.info(f"Fuente coincidente por patrón numérico: {matched_source}")
+                        break
+            
+            # ESTRATEGIA 2: Si no hubo match numérico, buscar coincidencia de nombre completo
+            if not matched_source:
+                # Ordenar fuentes por longitud descendente para preferir coincidencias más largas
+                sorted_sources = sorted(all_sources, key=lambda x: len(str(x)), reverse=True)
+                
+                for source in sorted_sources:
+                    s_norm = normalize(source)
+                    # Verificar si la fuente normalizada está en la consulta normalizada
+                    if s_norm in q_norm:
+                        matched_source = source
+                        logging.info(f"Fuente coincidente por nombre: {matched_source}")
+                        break
+            
+            # Filtrar por fuente si se encontró una
+            if matched_source:
+                articles_df = articles_df[articles_df['fuente'] == matched_source]
+            else:
+                # Si no se especifica ley, intentar inferir o usar comportamiento default
+                # Si es una consulta genérica ("primeros 5 articulos"), y no hay ley,
+                # el comportamiento anterior era malo (mezclaba todo).
+                # Por ahora, si no hay ley, excluimos artículos "0" que suelen ser introducciones
+                logging.info("No se detectó fuente específica, usando filtro genérico")
+                # Opcional: filtrar 'introducción' o 'artículo 0' si no se pide explícitamente
+            
+            # -------------------------------------------
+
             # Convertir números de artículos a enteros para ordenar correctamente
-            ley100_df = ley100_df.copy()
-            ley100_df['articulo_num'] = pd.to_numeric(ley100_df['articulo'], errors='coerce')
+            articles_df['articulo_num'] = pd.to_numeric(articles_df['articulo'], errors='coerce')
             
             # Filtrar artículos válidos y ordenar por número
-            valid_articles = ley100_df.dropna(subset=['articulo_num']).sort_values('articulo_num')
+            valid_articles = articles_df.dropna(subset=['articulo_num']).sort_values('articulo_num')
             
+            # Si no se detectó fuente, tratar de evitar artículos 0 si hay muchos (introducciones)
+            if not matched_source:
+                 valid_articles = valid_articles[valid_articles['articulo_num'] > 0]
+
             # Limitar al número solicitado
             selected_articles = valid_articles.head(requested_count)
             
@@ -461,12 +524,12 @@ class QueryRAGSystem:
                 return f"❌ No se encontraron artículos válidos para mostrar.", 0.0, False
             
             # Generar respuesta
+            title_prefix = f"de {matched_source}" if matched_source else "encontrados"
             response_lines = [
-                f"📋 **{len(selected_articles)} {'Primeros' if requested_count <= 20 else ''} Artículos de la Ley 100 de 1993:**\n"
+                f"📋 **{len(selected_articles)} {'Primeros' if requested_count <= 20 else ''} Artículos {title_prefix}:**\n"
             ]
             
             # Preferir texto completo si el usuario lo solicita
-            query_lower = query_text.lower()
             prefer_full_text = any(term in query_lower for term in ['texto', 'texto completo', 'con su texto', 'con el texto'])
             
             for _, row in selected_articles.iterrows():
@@ -529,7 +592,45 @@ class QueryRAGSystem:
             if match:
                 article_number = match.group(1)
                 logging.info(f"Solicitud de artículo específico detectada: {article_number}")
-                resp = vector_db.get_article_details(article_number)
+                
+                # --- NUEVA LÓGICA DE DETECCIÓN DE FUENTE ---
+                matched_source = None
+                if vector_db.df is not None:
+                    all_sources = vector_db.df['fuente'].unique()
+                    
+                    import unicodedata
+                    def normalize(text):
+                        return unicodedata.normalize('NFKD', str(text)).encode('ASCII', 'ignore').decode('utf-8').lower()
+                    
+                    q_norm = normalize(query_text.lower())
+                    
+                    # ESTRATEGIA 1: Buscar patrones numéricos específicos (ej: "ley 100", "decreto 123")
+                    law_pattern = re.search(r'(ley|decreto|resoluci[oó]n|c[oó]digo|estatuto)\s*(\d+)', q_norm)
+                    
+                    if law_pattern:
+                        law_type = law_pattern.group(1)
+                        law_num = law_pattern.group(2)
+                        search_key = fr"{law_type}\s+{law_num}\b"
+                        
+                        for source in all_sources:
+                            s_norm = normalize(source)
+                            if re.search(search_key, s_norm):
+                                matched_source = source
+                                logging.info(f"Fuente detectada para artículo específico: {matched_source}")
+                                break
+                    
+                    # ESTRATEGIA 2: Si no hubo match numérico, buscar coincidencia de nombre completo
+                    if not matched_source:
+                        sorted_sources = sorted(all_sources, key=lambda x: len(str(x)), reverse=True)
+                        for source in sorted_sources:
+                            s_norm = normalize(source)
+                            if s_norm in q_norm:
+                                matched_source = source
+                                logging.info(f"Fuente detectada por nombre para artículo específico: {matched_source}")
+                                break
+                # -------------------------------------------
+
+                resp = vector_db.get_article_details(article_number, source=matched_source)
                 # Desempaquetar si la base devuelve tupla (texto, similitud, usado_kb)
                 if isinstance(resp, tuple) and len(resp) == 3:
                     resp_text, sim, used_kb = resp
@@ -691,14 +792,14 @@ class QueryRAGSystem:
             article_df = vector_db.df[article_filter]
             
             if article_df.empty:
-                return f"❌ **Artículo No Encontrado**\n\nNo se encontró el artículo {article_number} en mi base de datos.\n\n**Posibles razones:**\n• El artículo no existe en la Ley 100 de 1993\n• El número de artículo es incorrecto\n• El artículo no está incluido en mi base de datos actual\n\n💡 **Sugerencia:** Verifica el número del artículo o consulta la lista completa de artículos disponibles."
+                return f"❌ **Artículo No Encontrado**\n\nNo se encontró el artículo {article_number} en mi base de datos.\n\n**Posibles razones:**\n• El artículo no existe en la normativa cargada\n• El número de artículo es incorrecto\n• El artículo no está incluido en mi base de datos actual\n\n💡 **Sugerencia:** Verifica el número del artículo o consulta la lista completa de artículos disponibles."
             
             # Tomar el primer resultado si hay múltiples
             article = article_df.iloc[0]
             
             # Verificar si el artículo tiene contenido válido
             if not article['texto_del_articulo'] or str(article['texto_del_articulo']).strip() in ['', 'nan', 'None']:
-                return f"⚠️ **Información Limitada - Artículo {article['articulo']}**\n\n**Fuente:** {article['fuente']}\n**Tema:** {article['tema']}\n\n❌ **Texto Completo No Disponible**\n\nLamentablemente, el texto completo de este artículo no está disponible en mi base de datos actual.\n\n**Lo que sí puedo ofrecerte:**\n• Información temática general\n• Resumen explicativo (si está disponible)\n• Orientación sobre el tema que trata\n\n💡 **Para obtener el texto completo:** Te recomiendo consultar directamente la Ley 100 de 1993 en fuentes oficiales como el Diario Oficial o portales gubernamentales."
+                return f"⚠️ **Información Limitada - Artículo {article['articulo']}**\n\n**Fuente:** {article['fuente']}\n**Tema:** {article['tema']}\n\n❌ **Texto Completo No Disponible**\n\nLamentablemente, el texto completo de este artículo no está disponible en mi base de datos actual.\n\n**Lo que sí puedo ofrecerte:**\n• Información temática general\n• Resumen explicativo (si está disponible)\n• Orientación sobre el tema que trata\n\n💡 **Para obtener el texto completo:** Te recomiendo consultar las fuentes oficiales como el Diario Oficial o portales gubernamentales."
             
             response = f"📄 **Artículo {article['articulo']}**\n\n"
             response += f"**Fuente:** {article['fuente']}\n"
